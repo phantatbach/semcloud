@@ -22,7 +22,7 @@ transformMats <- function(mat, asDist = TRUE){
 
 #' Turn tibble into matrix
 #'
-#' @param df Tibble, for example, output of \code{\link{loadCloud}} with distances
+#' @param df Tibble
 #' @param rownames Name of the column that will become the row names. Default is
 #'   "X_model", as it would work with the distances tibble.
 #'

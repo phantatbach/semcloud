@@ -2,5 +2,10 @@
 
 export("%>%")
 export(focdists_from_csv)
+export(getCoords)
+export(getFit)
+export(matricizeCloud)
 export(tokens_from_pac)
+export(transformMats)
 importFrom(magrittr,"%>%")
+importFrom(rlang,.data)
