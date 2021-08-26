@@ -1,3 +1,8 @@
+# semcloud: Post-processing of token-level clouds.
+# Copyright (C) 2021 Mariana Montes
+#
+# See full notice in README.md file.
+
 #' Dimensionality reduction for visualization
 #'
 #' Wrapper around \code{\link[vegan]{metaMDS}} and \code{\link[Rtsne]{Rtsne}}

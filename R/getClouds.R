@@ -1,3 +1,8 @@
+# semcloud: Post-processing of token-level clouds.
+# Copyright (C) 2021 Mariana Montes
+#
+# See full notice in README.md file.
+
 #' Get Clouds from distance matrix
 #'
 #' Read distance matrices from different models,
