@@ -14,14 +14,14 @@ extractHDBSCAN(dstmtx, minPts = 8, includePlot = FALSE)
 \item{includePlot}{Whether too include the plot (requires \code{cowplot}.)}
 }
 \value{
-List: the \code{df} element is a tibble with information per token:
+List: the \code{df} element is a \code{\link[tibble]{tibble}} with information per token:
 \itemize{
 \item{\strong{_id}: }{comes from the rownames of \code{dstmtx}}
 \item{\strong{clusters}: }{gives the clustering of the elements}
 \item{\strong{membprob}: }{indicates membership probabilities}
 \item{\strong{eps}: }{returns the epsilon value}
 }
-If \code{includePlot} is \code{TRUE}, a \code{grob} of the plot is included under \code{plot}.
+If \code{includePlot} is \code{TRUE}, a \code{grob} of the plot is included under \code{hplot}.
 }
 \description{
 Run \code{\link[dbscan]{hdbscan}} on a distance matrix and gather some information.
