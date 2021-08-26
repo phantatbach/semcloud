@@ -18,11 +18,13 @@ RoxygenNote: 7.1.1
 Imports: 
     dplyr,
     magrittr,
+    purrr,
     RcppCNPy,
     readr,
     rjson,
     rlang,
     Rtsne,
     stringr,
+    textreuse,
     tibble,
     vegan

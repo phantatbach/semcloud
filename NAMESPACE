@@ -3,6 +3,7 @@
 export("%>%")
 export(eucliMats)
 export(focdistsFromCsv)
+export(getClouds)
 export(getCoords)
 export(getDistMtx)
 export(getFit)
