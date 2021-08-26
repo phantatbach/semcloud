@@ -71,7 +71,7 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
   if (!is.character(d)) {
     df  <- df %>%
       dplyr::full_join(dplyr::select(d, !dplyr::starts_with(modelname)), by="_id") %>%
-      replace(.data, is.na(.data), 0.0)
+      replace(., is.na(.), 0.0)
   }
   return(df)
 }

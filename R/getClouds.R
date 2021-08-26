@@ -36,7 +36,7 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
     # for each of the models
     modelname <- textreuse::filenames(textreuse::filenames(textreuse::filenames(file)))
     # obtain the distance matrix
-    dists <- if (type == "token") tokensFromPac(input_dir, file) else focdistsFromCsv(input_dir, file)
+    dists <- if (type == "token") tokensFromPac(file.path(input_dir, file)) else focdistsFromCsv(file.path(input_dir, file))
 
     if (logrank) { dists <- transformMats(dists, TRUE) } # log-transform the matrix
 

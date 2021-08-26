@@ -10,15 +10,11 @@
 #'   with dimension names. Might only work for token-to-token distance
 #'   matrices.
 #'
-#' @param input_directory Directory where distance matrices
-#'   (as output from python module) are stored
-#' @param filename Not full name of a distance matrix stored
-#'   in \code{input_directory}.
+#' @param input_file Name of the file
 #'
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
-tokensFromPac <- function(input_directory, filename){
-  input_file <- file.path(input_directory, filename)
+tokensFromPac <- function(input_file){
   temp <- utils::unzip(input_file, unzip="internal")
   tokvecs <- RcppCNPy::npyLoad(temp[2])
   metadata <- rjson::fromJSON(file = temp[1])
@@ -36,8 +32,7 @@ tokensFromPac <- function(input_directory, filename){
 #'
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
-focdistsFromCsv <- function(input_directory, filename){
-  input_file <- file.path(input_directory, filename)
+focdistsFromCsv <- function(input_file){
   focdists <- suppressWarnings(
     readr::read_tsv(input_file, col_types = readr::cols())
   ) %>%
