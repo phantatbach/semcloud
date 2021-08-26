@@ -23,11 +23,12 @@ Imports:
     RcppCNPy,
     readr,
     rjson,
-    rlang,
+    rlang (>= 0.1.2),
     Rtsne,
     stringr,
     textreuse,
     tibble,
     vegan
 Suggests: 
+    roxygen2,
     cowplot

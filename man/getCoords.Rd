@@ -20,7 +20,7 @@ for output from \code{\link[vegan]{metaMDS}} or "tsne" for \code{\link[Rtsne]{Rt
 (it matches \code{technique} from \code{\link{getFit}}).}
 }
 \value{
-Tibble with the coordinates of each element.
+a \link[tibble:tibble-package]{tibble} with the coordinates of each element.
 }
 \description{
 Extract coordinates from fit

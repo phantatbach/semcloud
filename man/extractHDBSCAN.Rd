@@ -14,7 +14,7 @@ extractHDBSCAN(dstmtx, minPts = 8, includePlot = FALSE)
 \item{includePlot}{Whether too include the plot (requires \code{cowplot}.)}
 }
 \value{
-List: the \code{df} element is a \code{\link[tibble]{tibble}} with information per token:
+List: the \code{df} element is a \link[tibble:tibble-package]{tibble} with information per token:
 \itemize{
 \item{\strong{_id}: }{comes from the rownames of \code{dstmtx}}
 \item{\strong{clusters}: }{gives the clustering of the elements}

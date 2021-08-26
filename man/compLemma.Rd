@@ -18,7 +18,7 @@ compLemma(lemma, input_dir, output_dir, transformed = TRUE, fun = "euclidean")
 \item{fun}{Function to calculate the distances.}
 }
 \value{
-Tibble with minimal information
+a \link[tibble:tibble-package]{tibble} with minimal information
 }
 \description{
 Compute pairwise distances between the lemmas, store the distance matrix,

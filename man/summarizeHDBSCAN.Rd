@@ -37,9 +37,9 @@ summarizeHDBSCAN(
 \value{
 list with at least two items:
 \itemize{
-\item{\strong{coords}: }{\code{\link[tibble]{tibble}} with one row per token, the coordinates in the pertinent file, and information
+\item{\strong{coords}: }{a \link[tibble:tibble-package]{tibble} with one row per token, the coordinates in the pertinent file, and information
 from \code{\link{extractHDBSCAN}}} as well as the \code{variables} file.
-\item{\strong{cws}: }{\code{\link[tibble]{tibble}} with one row per context word and cluster, output
+\item{\strong{cws}: }{a \link[tibble:tibble-package]{tibble} with one row per context word and cluster, output
 from \code{\link{cwsForClusters}}}, combined with coordinates from the relevant file.
 \item{\strong{hplot}: }{If \code{includePlot}, the HDBSCAN plot.}
 }

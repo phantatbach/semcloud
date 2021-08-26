@@ -50,7 +50,7 @@ getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
 #'    for output from \code{\link[vegan]{metaMDS}} or "tsne" for \code{\link[Rtsne]{Rtsne}}
 #'    (it matches `technique` from \code{\link{getFit}}).
 #'
-#' @return Tibble with the coordinates of each element.
+#' @return a [tibble][tibble::tibble-package] with the coordinates of each element.
 #' @export
 #'
 #' @importFrom rlang .data
@@ -66,9 +66,8 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
   }
   df <- tibble::tibble(
     `_id` = rownames,
-    model.x = x,
-    model.y = y) %>%
-    dplyr::rename_all(list(~stringr::str_replace(.data, "model", modelname)))
+    !!rlang::sym(paste0(modelname, ".x")) := x,
+    !!rlang::sym(paste0(modelname, ".y")) := y)
   if (!is.character(d)) {
     df  <- df %>%
       dplyr::full_join(dplyr::select(d, !dplyr::starts_with(modelname)), by="_id") %>%

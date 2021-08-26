@@ -70,7 +70,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' @param output_dir Directory where the model information is and will be stored
 #' @inheritParams customDist
 #'
-#' @return Tibble with minimal information
+#' @return a [tibble][tibble::tibble-package] with minimal information
 #' @export
 #'
 #' @importFrom rlang .data

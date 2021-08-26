@@ -11,7 +11,7 @@
 #' @param minPts Minimum points for \code{\link[dbscan]{hdbscan}}
 #' @param includePlot Whether too include the plot (requires \code{cowplot}.)
 #'
-#' @return List: the \code{df} element is a \code{\link[tibble]{tibble}} with information per token:
+#' @return List: the \code{df} element is a [tibble][tibble::tibble-package] with information per token:
 #'     \itemize{
 #'         \item{**_id**: }{comes from the rownames of \code{dstmtx}}
 #'         \item{**clusters**: }{gives the clustering of the elements}
@@ -57,7 +57,7 @@ extractHDBSCAN <- function(dstmtx, minPts = 8, includePlot = FALSE) {
 #' @param cluster_column Name of the column with the name of the clusters (as factor)
 #' @param b Weight for computing \code{\link{fscore}}
 #'
-#' @return A \code{\link[tibble]{tibble}} with one row per context word per cluster, with frequency information.
+#' @return a [tibble][tibble::tibble-package] with one row per context word per cluster, with frequency information.
 #' @export
 #'
 #' @importFrom rlang .data
@@ -110,9 +110,9 @@ cwsForClusters <- function(variables, cws_column, cluster_column, b=1){
 #'
 #' @return list with at least two items:
 #'    \itemize{
-#'        \item{**coords**: }{\code{\link[tibble]{tibble}} with one row per token, the coordinates in the pertinent file, and information
+#'        \item{**coords**: }{a [tibble][tibble::tibble-package] with one row per token, the coordinates in the pertinent file, and information
 #'        from \code{\link{extractHDBSCAN}}} as well as the \code{variables} file.
-#'        \item{**cws**: }{\code{\link[tibble]{tibble}} with one row per context word and cluster, output
+#'        \item{**cws**: }{a [tibble][tibble::tibble-package] with one row per context word and cluster, output
 #'        from \code{\link{cwsForClusters}}}, combined with coordinates from the relevant file.
 #'        \item{**hplot**: }{If \code{includePlot}, the HDBSCAN plot.}
 #'    }

@@ -16,7 +16,7 @@ cwsForClusters(variables, cws_column, cluster_column, b = 1)
 \item{b}{Weight for computing \code{\link{fscore}}}
 }
 \value{
-A \code{\link[tibble]{tibble}} with one row per context word per cluster, with frequency information.
+a \link[tibble:tibble-package]{tibble} with one row per context word per cluster, with frequency information.
 }
 \description{
 Map context words and HDBSCAN clusters
