@@ -71,3 +71,29 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
   }
   return(df)
 }
+
+
+#' Procrustes between two matrices
+#'
+#' @param mat1 First matrix
+#' @param mat2 Second matrix
+#' @param mat1_name Name of the first matrix, for error log (default: "first matrix")
+#' @param mat2_name Name of the second matrix, for error log (default: "second matrix")
+#' @param transformed Whether the matrices have been transformed, just for error log
+#'
+#' @return Output from \code{\link[vegan]{procrustes}} between the two matrices
+#' @export
+procMats <- function(mat1, mat2,
+                     mat1_name = "first matrix", mat2_name = "second matrix",
+                     transformed = TRUE){
+  tokenlist <- row.names(mat1)[row.names(mat1) %in% row.names(mat2)]
+  mat1b <- mat1[tokenlist, tokenlist]
+  mat2b <- mat2[tokenlist, tokenlist]
+  result <- tryCatch(vegan::procrustes(mat1b, mat2b, symmetric = T)$ss, error = return)
+  if (inherits(result, "error")) {
+    message <- paste(mat1_name, mat2_name, transformed, Sys.time())
+    write(message, "procrustes.log", append = T)
+    result <- vegan::procrustes(mat2b, mat1b, symmetric = T)$ss
+  }
+  return(result)
+}
