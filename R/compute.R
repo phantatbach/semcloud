@@ -97,3 +97,20 @@ procMats <- function(mat1, mat2,
   }
   return(result)
 }
+
+#' Mantel statistic between two matrices
+#'
+#' @param mat1 First matrix
+#' @param mat2 Second matrix
+#'
+#' @return Statistic from \code{\link[vegan]{mantel}} between the two matrices.
+#' @export
+mantelMats <- function(mat1, mat2){
+  # mantel equivalent of procMats
+  tokenlist <- row.names(mat1)[row.names(mat1) %in% row.names(mat2)]
+  res <- vegan::mantel(
+    mat1[tokenlist, tokenlist],
+    mat2[tokenlist, tokenlist]
+    )$statistic
+  return(res)
+}
