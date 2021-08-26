@@ -26,7 +26,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
     dimnames = list(mnames, mnames)) # create a matrix with the models as rows and columns
   names(mnames) <- mnames
   tokvecs <- purrr::map(mnames, function(m) {
-    mat <- tokensFromPac(input_dir, paste0(m, "ttmx.dist.pac", sep = "."))
+    mat <- tokensFromPac(file.path(input_dir, paste0(m, "ttmx.dist.pac", sep = ".")))
     if (transformed == TRUE) return(transformMats(mat, asDist = fun != "euclidean")) else return(mat)
   })
 

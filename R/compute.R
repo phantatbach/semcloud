@@ -70,8 +70,8 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
     !!rlang::sym(paste0(modelname, ".y")) := y)
   if (!is.character(d)) {
     df  <- df %>%
-      dplyr::full_join(dplyr::select(d, !dplyr::starts_with(modelname)), by="_id") %>%
-      replace(., is.na(.), 0.0)
+      dplyr::full_join(dplyr::select(d, !dplyr::starts_with(modelname)), by="_id")
+    df <- replace(df, is.na(df), 0.0)
   }
   return(df)
 }

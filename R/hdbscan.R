@@ -126,7 +126,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
   cw_coords_file <- file.path(output_dir, paste0(lemma, coords_name, ".cws.tsv"))
   variables_file <- file.path(output_dir, paste0(lemma, ".variables.tsv"))
 
-  dstmtx <- tokensFromPac(input_dir, ttmx) %>%
+  dstmtx <- tokensFromPac(file.path(input_dir, ttmx)) %>%
     transformMats(TRUE)
   variables <- readr::read_tsv(variables_file, col_types = readr::cols()) %>%
     dplyr::select(.data$`_id`, # keep id column

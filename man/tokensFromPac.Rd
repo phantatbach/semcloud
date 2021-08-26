@@ -4,14 +4,10 @@
 \alias{tokensFromPac}
 \title{Open token distance matrix}
 \usage{
-tokensFromPac(input_directory, filename)
+tokensFromPac(input_file)
 }
 \arguments{
-\item{input_directory}{Directory where distance matrices
-(as output from python module) are stored}
-
-\item{filename}{Not full name of a distance matrix stored
-in \code{input_directory}.}
+\item{input_file}{Name of the file}
 }
 \value{
 Distance matrix as matrix with ids as rownames and column names.

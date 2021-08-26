@@ -6,14 +6,10 @@
 Open a distance matrix stored as a \code{.csv} file. Replaces
 \code{\link{tokensFromPac}} for type level matrices.}
 \usage{
-focdistsFromCsv(input_directory, filename)
+focdistsFromCsv(input_file)
 }
 \arguments{
-\item{input_directory}{Directory where distance matrices
-(as output from python module) are stored}
-
-\item{filename}{Not full name of a distance matrix stored
-in \code{input_directory}.}
+\item{input_file}{Name of the file}
 }
 \value{
 Distance matrix as matrix with ids as rownames and column names.
