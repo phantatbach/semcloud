@@ -17,7 +17,7 @@
 #'
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
-tokens_from_pac <- function(input_directory, filename){
+tokensFromPac <- function(input_directory, filename){
   input_file <- file.path(input_directory, filename)
   temp <- utils::unzip(input_file, unzip="internal")
   tokvecs <- RcppCNPy::npyLoad(temp[2])
@@ -30,13 +30,13 @@ tokens_from_pac <- function(input_directory, filename){
 
 #' Open type level distance matrices
 #' Open a distance matrix stored as a \code{.csv} file. Replaces
-#' \code{\link{tokens_from_pac}} for type level matrices.
+#' \code{\link{tokensFromPac}} for type level matrices.
 #'
-#' @inheritParams tokens_from_pac
+#' @inheritParams tokensFromPac
 #'
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
-focdists_from_csv <- function(input_directory, filename){
+focdistsFromCsv <- function(input_directory, filename){
   input_file <- file.path(input_directory, filename)
   focdists <- suppressWarnings(
     readr::read_tsv(input_file, col_types = readr::cols())

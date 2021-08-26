@@ -31,3 +31,26 @@ transformMats <- function(mat, asDist = TRUE){
 matricizeCloud <- function(df, rownames = "X_model"){
   df %>% data.frame(row.names = rownames) %>% as.matrix()
 }
+
+#' Get Distance Matrix
+#'
+#' Store distances as `tsv` and return `dist` object.
+#'
+#' @param wwmx Distance matrix as outputted from \code{\link{focdistsFromCsv}}.
+#' @param source_dir Directory to store the distance matrix in
+#' @param lemma Name of the lemma, for the filename
+#' @param suffix Suffix to add after `[lemma].models.dist` in the filename
+#'
+#' @return Distance matrix as a \code{dist} object.
+#' @export
+getDistMtx <- function(wwmx, source_dir, lemma, suffix = "") {
+  # Save distance matrix as tsv
+  suffix <- if (nchar(suffix) == 0) "tsv" else paste0(suffix, ".tsv")
+  filename <- file.path(source_dir, paste(lemma, "models.dist", suffix, sep= "."))
+  as.data.frame(wwmx) %>%
+    dplyr::mutate(`_model` = row.names(wwmx)) %>%
+    readr::write_tsv(filename)
+  print(sprintf("Distance matrix saved in %s", filename))
+  return(stats::as.dist(wwmx))
+}
+
