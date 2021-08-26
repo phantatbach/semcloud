@@ -27,7 +27,7 @@ A distance matrix (\code{matrix} object) with models as rows and columns.
 Three functions to compute distances between (token) matrices are supported:
 \itemize{
 \item "euclidean" runs \code{\link{eucliMats}}, which computes tokenwise euclidean distances and averages over them;
-\item "procrustes" runs \code{\link{vegan}{procrustes}} via \code{\link{procMats}};
-\item "mantel" runs \code{\link{vegan}{mantel}} via \code{\link{mantelMats}}.
+\item "procrustes" runs \code{\link[vegan]{procrustes}} via \code{\link{procMats}};
+\item "mantel" runs \code{\link[vegan]{mantel}} via \code{\link{mantelMats}}.
 }
 }

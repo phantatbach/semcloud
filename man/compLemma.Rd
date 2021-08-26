@@ -22,5 +22,5 @@ Tibble with minimal information
 }
 \description{
 Compute pairwise distances between the lemmas, store the distance matrix,
-reduce to two dimensions with \code{\link{vegan}{metaMDS}}, store and return summary..
+reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary..
 }

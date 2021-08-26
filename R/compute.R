@@ -137,3 +137,17 @@ eucliMats <- function(mat1, mat2){
     sqrt() %>%
     mean()
 }
+
+#' F-score
+#'
+#' Compute F-score from precision and recall.
+#'
+#' @param precision Precision
+#' @param recall Recall
+#' @param b Weight
+#'
+#' @return F-score
+#' @export
+fscore <- function(precision, recall, b = 1) {
+  (1 + b^2) * (precision * recall) / (b^2 * precision + recall)
+}

@@ -8,8 +8,8 @@
 #'
 #' Three functions to compute distances between (token) matrices are supported:
 #'    - "euclidean" runs \code{\link{eucliMats}}, which computes tokenwise euclidean distances and averages over them;
-#'    - "procrustes" runs \code{\link{vegan}{procrustes}} via \code{\link{procMats}};
-#'    - "mantel" runs \code{\link{vegan}{mantel}} via \code{\link{mantelMats}}.
+#'    - "procrustes" runs \code{\link[vegan]{procrustes}} via \code{\link{procMats}};
+#'    - "mantel" runs \code{\link[vegan]{mantel}} via \code{\link{mantelMats}}.
 #'
 #' @param mnames List of model names.
 #' @param input_dir Directory where the models are stored.
@@ -64,7 +64,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' Compare models of a lemma
 #'
 #' Compute pairwise distances between the lemmas, store the distance matrix,
-#' reduce to two dimensions with \code{\link{vegan}{metaMDS}}, store and return summary..
+#' reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary..
 #'
 #' @param lemma Name of the lemma, for the filenames
 #' @param output_dir Directory where the model information is and will be stored
