@@ -1,0 +1,15 @@
+Package: semcloud
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Mariana",
+           family = "Montes",
+           role = c("aut", "cre"),
+           email = "mariana.montes@kuleuven.be",
+           comment = c(ORCID = "0000-0002-3869-3207"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
