@@ -1,3 +1,8 @@
+# semcloud: Post-processing of token-level clouds.
+# Copyright (C) 2021 Mariana Montes
+#
+# See full notice in README.md file.
+
 #' Open token distance matrix
 #'
 #' Open a distance matrix stored as a \code{.pac} compressed file
@@ -32,7 +37,7 @@ tokens_from_pac <- function(input_directory, filename){
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
 focdists_from_csv <- function(input_directory, filename){
-  input_file = file.path(input_directory, filename)
+  input_file <- file.path(input_directory, filename)
   focdists <- suppressWarnings(
     readr::read_tsv(input_file, col_types = readr::cols())
   ) %>%

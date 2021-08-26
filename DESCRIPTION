@@ -1,5 +1,5 @@
 Package: semcloud
-Title: What the Package Does (One Line, Title Case)
+Title: Post-processing of token-level clouds
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Mariana",
@@ -7,9 +7,16 @@ Authors@R:
            role = c("aut", "cre"),
            email = "mariana.montes@kuleuven.be",
            comment = c(ORCID = "0000-0002-3869-3207"))
-Description: What the package does (one paragraph).
-License: MIT + file LICENSE
+Description: This package offers some functions to process
+  output from the semasioFlow python package and get it ready
+  to use in the NephoSem visualization or the Level 3 Shiny App.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Imports: 
+    magrittr,
+    RcppCNPy,
+    readr,
+    rjson
