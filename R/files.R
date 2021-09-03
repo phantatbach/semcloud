@@ -33,10 +33,10 @@ tokensFromPac <- function(input_file){
 #' @return Distance matrix as matrix with ids as rownames and column names.
 #' @export
 focdistsFromCsv <- function(input_file){
-  focdists <- suppressWarnings(
-    readr::read_tsv(input_file, col_types = readr::cols())
-  ) %>%
-    data.frame(row.names = "X1") %>%
+  read <- suppressWarnings(
+    readr::read_tsv(input_file, show_col_types = FALSE)
+  )
+  focdists <- data.frame(read, row.names = colnames(read)[[1]]) %>%
     as.matrix()
   dimnames(focdists)[2] <- dimnames(focdists)[1]
   return(focdists)
