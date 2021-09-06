@@ -102,8 +102,8 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
   print(stress)
 
   #### Add coordinates to models' files
-  models.w.coords <- dst.MDS$points %>% as.data.frame %>%
-    tibble::rownames_to_column %>% tibble::as_tibble %>%
+  models.w.coords <- dst.MDS$points %>% as.data.frame() %>%
+    tibble::rownames_to_column() %>% tibble::as_tibble() %>%
     stats::setNames(c('_model', 'model.x', 'model.y')) %>%
     dplyr::left_join(models, by = '_model')
 
