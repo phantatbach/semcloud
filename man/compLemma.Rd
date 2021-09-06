@@ -4,7 +4,14 @@
 \alias{compLemma}
 \title{Compare models of a lemma}
 \usage{
-compLemma(lemma, input_dir, output_dir, transformed = TRUE, fun = "euclidean")
+compLemma(
+  lemma,
+  input_dir,
+  output_dir,
+  transformed = TRUE,
+  fun = "euclidean",
+  tokens_suffix = ".ttmx.dist.pac"
+)
 }
 \arguments{
 \item{lemma}{Name of the lemma, for the filenames}
@@ -16,6 +23,8 @@ compLemma(lemma, input_dir, output_dir, transformed = TRUE, fun = "euclidean")
 \item{transformed}{Whether the distance matrices}
 
 \item{fun}{Function to calculate the distances.}
+
+\item{tokens_suffix}{Suffix to add to the model name in the file names of the distance matrices.}
 }
 \value{
 a \link[tibble:tibble-package]{tibble} with minimal information

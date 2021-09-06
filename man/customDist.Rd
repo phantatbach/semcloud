@@ -8,7 +8,8 @@ customDist(
   mnames,
   input_dir,
   transformed = TRUE,
-  fun = c("euclidean", "procrustes", "mantel")
+  fun = c("euclidean", "procrustes", "mantel"),
+  tokens_suffix = ".ttmx.dist.pac"
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ customDist(
 \item{transformed}{Whether the distance matrices}
 
 \item{fun}{Function to calculate the distances.}
+
+\item{tokens_suffix}{Suffix to add to the model name in the file names of the distance matrices.}
 }
 \value{
 A distance matrix (\code{matrix} object) with models as rows and columns.

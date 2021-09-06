@@ -15,18 +15,20 @@
 #' @param input_dir Directory where the models are stored.
 #' @param transformed Whether the distance matrices
 #' @param fun Function to calculate the distances.
+#' @param tokens_suffix Suffix to add to the model name in the file names of the distance matrices.
 #'
 #' @return A distance matrix (\code{matrix} object) with models as rows and columns.
 #' @export
 customDist <- function(mnames, input_dir, transformed = TRUE,
-                        fun = c("euclidean", "procrustes", "mantel")) {
+                        fun = c("euclidean", "procrustes", "mantel"),
+                       tokens_suffix = ".ttmx.dist.pac") {
   res <- matrix(
     nrow = length(mnames),
     ncol = length(mnames),
     dimnames = list(mnames, mnames)) # create a matrix with the models as rows and columns
   names(mnames) <- mnames
   tokvecs <- purrr::map(mnames, function(m) {
-    mat <- tokensFromPac(file.path(input_dir, paste0(m, "ttmx.dist.pac", sep = ".")))
+    mat <- tokensFromPac(file.path(input_dir, paste0(m, tokens_suffix)))
     if (transformed == TRUE) return(transformMats(mat, asDist = fun != "euclidean")) else return(mat)
   })
 
@@ -75,7 +77,8 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #'
 #' @importFrom rlang .data
 compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
-                      fun = "euclidean"){
+                      fun = "euclidean",
+                      tokens_suffix = ".ttmx.dist.pac"){
 
   # load data on the models
   models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')), col_types = readr::cols())
