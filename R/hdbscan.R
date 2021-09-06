@@ -63,8 +63,8 @@ extractHDBSCAN <- function(dstmtx, minPts = 8, includePlot = FALSE) {
 #' @importFrom rlang .data
 cwsForClusters <- function(variables, cws_column, cluster_column, b=1){
 
-  all_cws <- variables %>% dplyr::pull({{ cws_column }}) %>% purrr::flatten_chr() %>% unique()
-  clusters <- variables %>% dplyr::pull({{ cluster_column }}) %>% unique() %>% sort()
+  all_cws <- variables %>% dplyr::pull(cws_column) %>% purrr::flatten_chr() %>% unique()
+  clusters <- variables %>% dplyr::pull(cluster_column) %>% unique() %>% sort()
 
   clus_cws_matrix <- matrix(nrow = length(clusters), ncol = length(all_cws),
                             dimnames = list(clusters, all_cws))
@@ -72,14 +72,14 @@ cwsForClusters <- function(variables, cws_column, cluster_column, b=1){
 
   for (i in 1:nrow(variables)) {
     dat <- dplyr::slice(variables, i)
-    clus <- dplyr::pull(dat, {{ cluster_column }})
-    cws <- dplyr::pull(dat, {{ cws_column }})[[1]]
+    clus <- dat[[cluster_column]]
+    cws <- dat[[cws_column]][[1]]
     for (cw in unique(cws)) {
       clus_cws_matrix[clus, cw] <- clus_cws_matrix[clus, cw] + 1
     }
   }
   purrr::map_df(as.character(clusters), function(clus) {
-    clus_size <- nrow(dplyr::filter(variables, {{ cluster_column }} == clus))
+    clus_size <- nrow(dplyr::filter(variables, !!sym(cluster_column) == clus))
     this_row <- clus_cws_matrix[clus,]
     present <- names(this_row[this_row > 0])
 
@@ -147,7 +147,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
   coords <- coords %>%
     dplyr::left_join(variables, by = '_id') %>%
     dplyr::left_join(h$df, by = '_id')
-  cws_per_cluster <- cwsForClusters(coords, cws, clusters)
+  cws_per_cluster <- cwsForClusters(coords, "cws", "clusters")
 
   if (file.exists(cw_coords_file)) {
     cw_coords <- readr::read_tsv(file.path(cw_coords_file), show_col_types = FALSE)
@@ -161,7 +161,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
       )
     } else {
       cws_per_cluster <- cws_per_cluster %>%
-        mutate(model.x = 0, model.y = 0)
+        dplyr::mutate(model.x = 0, model.y = 0)
     }
   }
   res <- list(coords = coords, cws = cws_per_cluster)

@@ -36,4 +36,6 @@ List of stresses (emtpy if "mds" is not given.)
 Read distance matrices from different models,
 run dimensional reduction for visualization based on different techniques
 and store the coordinates corresponding to each model in a dataframe per technique.
+The names of the models will be found in the \code{models} file and their paths will be
+searched for in \code{input_dir}: if a file is not found, a warning will be issued.
 }

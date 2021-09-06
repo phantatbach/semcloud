@@ -8,6 +8,8 @@
 #' Read distance matrices from different models,
 #' run dimensional reduction for visualization based on different techniques
 #' and store the coordinates corresponding to each model in a dataframe per technique.
+#' The names of the models will be found in the `models` file and their paths will be
+#' searched for in `input_dir`: if a file is not found, a warning will be issued.
 #'
 #' @param input_dir Directory where the token distance matrices are stored.
 #' @param output_dir Directory where the data will be stored.
@@ -33,10 +35,15 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
 
   pb <- utils::txtProgressBar(min = 0, max = length(files_list), style = 3)
   for (file in files_list){
+    fname <- file.path(input_dir, file)
+    if (!file.exists(fname)) {
+      warning(paste0(fname, " does not exist; model skipped."))
+      next
+    }
     # for each of the models
     modelname <- textreuse::filenames(textreuse::filenames(textreuse::filenames(file)))
     # obtain the distance matrix
-    dists <- if (type == "token") tokensFromPac(file.path(input_dir, file)) else focdistsFromCsv(file.path(input_dir, file))
+    dists <- if (type == "token") tokensFromPac(fname) else focdistsFromCsv(fname)
 
     if (logrank) { dists <- transformMats(dists, TRUE) } # log-transform the matrix
 
