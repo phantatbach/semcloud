@@ -128,7 +128,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
 
   dstmtx <- tokensFromPac(file.path(input_dir, ttmx)) %>%
     transformMats(TRUE)
-  variables <- readr::read_tsv(variables_file, col_types = readr::cols()) %>%
+  variables <- readr::read_tsv(variables_file, show_col_types = FALSE) %>%
     dplyr::select(.data$`_id`, # keep id column
            cws = stringr::str_replace(modelname, "(.+).LENGTH.*", "_cws.\\1"), # context words column
            !dplyr::starts_with("_") # columns without prefix, e.g. 'sense', if they exist
@@ -136,7 +136,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
     dplyr::mutate(cws = stringr::str_split(.data$cws, ";"))
   tokens <- intersect(row.names(dstmtx), variables$`_id`)
 
-  coords <- readr::read_tsv(coords_file, col_types = readr::cols()) %>%
+  coords <- readr::read_tsv(coords_file, show_col_types = FALSE) %>%
     dplyr::select(.data$`_id`, model.x = paste0(modelname, ".x"), model.y = paste0(modelname, ".y")) %>%
     dplyr::filter(.data$`_id` %in% tokens)
   dstmtx <- dstmtx[tokens, tokens]
@@ -150,13 +150,19 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
   cws_per_cluster <- cwsForClusters(coords, cws, clusters)
 
   if (file.exists(cw_coords_file)) {
-    cw_coords <- readr::read_tsv(file.path(cw_coords_file), col_types = readr::cols()) %>%
-      dplyr::select(cw = .data$`_id`, model.x = paste0(modelname, ".x"), model.y = paste0(modelname, ".y"))
-    cws_per_cluster <- dplyr::left_join(
-      cws_per_cluster,
-      cw_coords,
-      by = "cw"
-    )
+    cw_coords <- readr::read_tsv(file.path(cw_coords_file), show_col_types = FALSE)
+    if (paste0(modelname, ".x") %in% colnames(cw_coords)) {
+      cw_coords <- cw_coords %>%
+        dplyr::select(cw = .data$`_id`, model.x = paste0(modelname, ".x"), model.y = paste0(modelname, ".y"))
+      cws_per_cluster <- dplyr::left_join(
+        cws_per_cluster,
+        cw_coords,
+        by = "cw"
+      )
+    } else {
+      cws_per_cluster <- cws_per_cluster %>%
+        mutate(model.x = 0, model.y = 0)
+    }
   }
   res <- list(coords = coords, cws = cws_per_cluster)
   if (includePlot) { res$hplot <- h$hplot }

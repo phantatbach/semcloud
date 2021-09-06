@@ -25,7 +25,7 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
     suffix <- if (type == "token") ".tsv" else ".cws.tsv"
 
     filename.full <- file.path(output_dir, paste0(lemma, solution, suffix))
-    df <- if (file.exists(filename.full)) readr::read_tsv(filename.full, col_types = readr::cols()) else "" # in case we have stored it
+    df <- if (file.exists(filename.full)) readr::read_tsv(filename.full, show_col_types = FALSE, lazy = FALSE) else "" # in case we have stored it
     return(list(filename = filename.full, df = df))
   })
 

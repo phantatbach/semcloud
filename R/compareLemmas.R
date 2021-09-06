@@ -81,14 +81,15 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
                       tokens_suffix = ".ttmx.dist.pac"){
 
   # load data on the models
-  models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')), col_types = readr::cols())
+  models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')),
+                            show_col_types = FALSE, lazy = FALSE)
   if ('model.x' %in% colnames(models)) { models <- dplyr::select(models, -.data$model.x, -.data$model.y) }
 
   models.names <- models$`_model`
 
   distfile <- file.path(output_dir, paste0(lemma, ".models.dist.tsv"))
   if (file.exists(distfile)) {
-    distmtx <- readr::read_tsv(distfile, col_types = readr::cols()) %>%
+    distmtx <- readr::read_tsv(distfile, show_col_types = FALSE) %>%
       matricizeCloud() %>% stats::as.dist()
   } else {
     distances <- customDist(models.names, input_dir, transformed = transformed, fun = fun)
