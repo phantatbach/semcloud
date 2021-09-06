@@ -104,7 +104,7 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
   #### Add coordinates to models' files
   models.w.coords <- dst.MDS$points %>% as.data.frame %>%
     tibble::rownames_to_column %>% tibble::as_tibble %>%
-    stats::setNames(.data, c('_model', 'model.x', 'model.y')) %>%
+    stats::setNames(c('_model', 'model.x', 'model.y')) %>%
     dplyr::left_join(models, by = '_model')
 
   # Save new models file
