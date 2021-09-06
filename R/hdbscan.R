@@ -75,6 +75,9 @@ cwsForClusters <- function(variables, cws_column, cluster_column, b=1){
     clus <- dat[[cluster_column]]
     cws <- dat[[cws_column]][[1]]
     for (cw in unique(cws)) {
+      if (is.na(cw)) {
+        next
+      }
       clus_cws_matrix[clus, cw] <- clus_cws_matrix[clus, cw] + 1
     }
   }
