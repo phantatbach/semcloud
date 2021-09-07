@@ -93,7 +93,7 @@ procMats <- function(mat1, mat2,
   tokenlist <- row.names(mat1)[row.names(mat1) %in% row.names(mat2)]
   mat1b <- mat1[tokenlist, tokenlist]
   mat2b <- mat2[tokenlist, tokenlist]
-  result <- tryCatch(vegan::procrustes(mat1b, mat2b, symmetric = T)$ss, error = return())
+  result <- tryCatch(vegan::procrustes(mat1b, mat2b, symmetric = T)$ss, error = return)
   if (inherits(result, "error")) {
     message <- paste(mat1_name, mat2_name, transformed, Sys.time())
     write(message, "procrustes.log", append = T)
