@@ -18,10 +18,11 @@
 #' @param solutions Named list of techniques to run for visualization possible `technique` values in \code{\link{getFit}}.
 #' @param logrank Whether to transform the matrices with \code{\link{transformMats}}.
 #' @param type Whether to open the files with \code{\link{tokensFromPac}} (for "token") or \code{\link{focdistsFromCsv}} (otherwise).
+#' @param row_selection List of row (and column) names to subset the matrices.
 #'
 #' @return List of stresses (emtpy if "mds" is not given.)
 #' @export
-getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logrank = TRUE, type = "token"){
+getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logrank = TRUE, type = "token", row_selection = NA){
 
   d <- purrr::map(solutions, function(solution){ # set up main file
     suffix <- if (type == "token") ".tsv" else ".cws.tsv"
@@ -44,6 +45,11 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
     modelname <- textreuse::filenames(textreuse::filenames(textreuse::filenames(file)))
     # obtain the distance matrix
     dists <- if (type == "token") tokensFromPac(fname) else focdistsFromCsv(fname)
+
+    if (!is.na(row_selection)) {
+      row_subset <- intersect(row_selection, row.names(dists))
+      dists <- dists[row_subset, row_subset]
+    }
 
     if (logrank) { dists <- transformMats(dists, TRUE) } # log-transform the matrix
 

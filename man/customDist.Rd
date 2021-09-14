@@ -9,7 +9,8 @@ customDist(
   input_dir,
   transformed = TRUE,
   fun = c("euclidean", "procrustes", "mantel"),
-  tokens_suffix = ".ttmx.dist.pac"
+  tokens_suffix = ".ttmx.dist.pac",
+  row_selection = NA
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ customDist(
 \item{fun}{Function to calculate the distances.}
 
 \item{tokens_suffix}{Suffix to add to the model name in the file names of the distance matrices.}
+
+\item{row_selection}{List of row (and column) names to subset the matrices.}
 }
 \value{
 A distance matrix (\code{matrix} object) with models as rows and columns.

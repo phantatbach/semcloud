@@ -11,7 +11,8 @@ getClouds(
   lemma,
   solutions,
   logrank = TRUE,
-  type = "token"
+  type = "token",
+  row_selection = NA
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ getClouds(
 \item{logrank}{Whether to transform the matrices with \code{\link{transformMats}}.}
 
 \item{type}{Whether to open the files with \code{\link{tokensFromPac}} (for "token") or \code{\link{focdistsFromCsv}} (otherwise).}
+
+\item{row_selection}{List of row (and column) names to subset the matrices.}
 }
 \value{
 List of stresses (emtpy if "mds" is not given.)
