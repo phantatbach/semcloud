@@ -12,7 +12,7 @@ getClouds(
   solutions,
   logrank = TRUE,
   type = "token",
-  row_selection = NA
+  row_selection = vector()
 )
 }
 \arguments{

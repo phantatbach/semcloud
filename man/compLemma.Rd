@@ -11,7 +11,7 @@ compLemma(
   transformed = TRUE,
   fun = "euclidean",
   tokens_suffix = ".ttmx.dist.pac",
-  row_selection = NA
+  row_selection = vector()
 )
 }
 \arguments{

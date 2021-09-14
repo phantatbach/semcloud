@@ -22,7 +22,7 @@
 #'
 #' @return List of stresses (emtpy if "mds" is not given.)
 #' @export
-getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logrank = TRUE, type = "token", row_selection = NA){
+getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logrank = TRUE, type = "token", row_selection = vector()){
 
   d <- purrr::map(solutions, function(solution){ # set up main file
     suffix <- if (type == "token") ".tsv" else ".cws.tsv"
@@ -46,7 +46,7 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
     # obtain the distance matrix
     dists <- if (type == "token") tokensFromPac(fname) else focdistsFromCsv(fname)
 
-    if (!is.na(row_selection)) {
+    if (length(row_selection) > 0) {
       row_subset <- intersect(row_selection, row.names(dists))
       dists <- dists[row_subset, row_subset]
     }

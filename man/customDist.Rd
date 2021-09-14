@@ -10,7 +10,7 @@ customDist(
   transformed = TRUE,
   fun = c("euclidean", "procrustes", "mantel"),
   tokens_suffix = ".ttmx.dist.pac",
-  row_selection = NA
+  row_selection = vector()
 )
 }
 \arguments{

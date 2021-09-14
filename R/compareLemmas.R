@@ -22,7 +22,7 @@
 #' @export
 customDist <- function(mnames, input_dir, transformed = TRUE,
                         fun = c("euclidean", "procrustes", "mantel"),
-                       tokens_suffix = ".ttmx.dist.pac", row_selection = NA) {
+                       tokens_suffix = ".ttmx.dist.pac", row_selection = vector()) {
   res <- matrix(
     nrow = length(mnames),
     ncol = length(mnames),
@@ -31,7 +31,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
   tokvecs <- purrr::map(mnames, function(m) {
     mat <- tokensFromPac(file.path(input_dir, paste0(m, tokens_suffix)))
     if (transformed == TRUE) return(transformMats(mat, asDist = fun != "euclidean")) else return(mat)
-    if (!is.na(row_selection)) {
+    if (length(row_selection) > 0) {
       row_subset <- intersect(row_selection, row.names(mat))
       mat <- mat[row_subset, row_subset]
     }
@@ -83,7 +83,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' @importFrom rlang .data
 compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
                       fun = "euclidean",
-                      tokens_suffix = ".ttmx.dist.pac", row_selection = NA){
+                      tokens_suffix = ".ttmx.dist.pac", row_selection = vector()){
 
   # load data on the models
   models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')),
