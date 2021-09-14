@@ -13,7 +13,7 @@ The goal of semcloud is to …
 You can install the github development version with:
 
 ``` r
-devtools::install_github("montesmariana/semcloud")
+remotes::install_github("montesmariana/semcloud")
 ```
 
 ## Example
