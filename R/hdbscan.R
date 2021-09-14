@@ -33,7 +33,7 @@ extractHDBSCAN <- function(dstmtx, minPts = 8, includePlot = FALSE) {
   res <- list(
     df = tibble::tibble(
       `_id` = row.names(dstmtx),
-      clusters = factor(clusters[.data$`_id`]),
+      cluster = factor(clusters[.data$`_id`]),
       membprob = membprob[.data$`_id`],
       eps = eps[.data$`_id`]
     )
@@ -156,7 +156,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
     cw_coords <- readr::read_tsv(file.path(cw_coords_file), show_col_types = FALSE)
     if (paste0(modelname, ".x") %in% colnames(cw_coords)) {
       cw_coords <- cw_coords %>%
-        dplyr::select(cw = .data$`_id`, model.x = paste0(modelname, ".x"), model.y = paste0(modelname, ".y"))
+        dplyr::select(cw = .data$`_id`, x = paste0(modelname, ".x"), y = paste0(modelname, ".y"))
       cws_per_cluster <- dplyr::left_join(
         cws_per_cluster,
         cw_coords,
@@ -164,7 +164,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
       )
     } else {
       cws_per_cluster <- cws_per_cluster %>%
-        dplyr::mutate(model.x = 0, model.y = 0)
+        dplyr::mutate(x = 0, y = 0)
     }
   }
   res <- list(coords = coords, cws = cws_per_cluster)
