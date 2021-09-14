@@ -83,7 +83,7 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' @importFrom rlang .data
 compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
                       fun = "euclidean",
-                      tokens_suffix = ".ttmx.dist.pac"){
+                      tokens_suffix = ".ttmx.dist.pac", row_selection = NA){
 
   # load data on the models
   models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')),
@@ -97,7 +97,7 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
     distmtx <- readr::read_tsv(distfile, show_col_types = FALSE) %>%
       matricizeCloud() %>% stats::as.dist()
   } else {
-    distances <- customDist(models.names, input_dir, transformed = transformed, fun = fun)
+    distances <- customDist(models.names, input_dir, transformed = transformed, fun = fun, row_selection = row_selection)
     suffix <- if (fun == "euclidean") "" else fun
 
     distmtx <- getDistMtx(distances, output_dir, lemma, suffix)

@@ -10,7 +10,8 @@ compLemma(
   output_dir,
   transformed = TRUE,
   fun = "euclidean",
-  tokens_suffix = ".ttmx.dist.pac"
+  tokens_suffix = ".ttmx.dist.pac",
+  row_selection = NA
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ compLemma(
 \item{fun}{Function to calculate the distances.}
 
 \item{tokens_suffix}{Suffix to add to the model name in the file names of the distance matrices.}
+
+\item{row_selection}{List of row (and column) names to subset the matrices.}
 }
 \value{
 a \link[tibble:tibble-package]{tibble} with minimal information
