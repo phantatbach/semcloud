@@ -14,7 +14,7 @@
 #' @return List: the \code{df} element is a [tibble][tibble::tibble-package] with information per token:
 #'     \itemize{
 #'         \item{**_id**: }{comes from the rownames of \code{dstmtx}}
-#'         \item{**clusters**: }{gives the clustering of the elements}
+#'         \item{**cluster**: }{gives the clustering of the elements}
 #'         \item{**membprob**: }{indicates membership probabilities}
 #'         \item{**eps**: }{returns the epsilon value}
 #'     }
@@ -154,7 +154,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
   coords <- coords %>%
     dplyr::left_join(variables, by = '_id') %>%
     dplyr::left_join(h$df, by = '_id')
-  cws_per_cluster <- cwsForClusters(coords, "cws", "clusters")
+  cws_per_cluster <- cwsForClusters(coords, "cws", "cluster")
 
   if (file.exists(cw_coords_file)) {
     cw_coords <- readr::read_tsv(file.path(cw_coords_file), show_col_types = FALSE)
