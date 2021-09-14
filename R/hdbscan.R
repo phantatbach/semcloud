@@ -131,12 +131,16 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
 
   dstmtx <- tokensFromPac(file.path(input_dir, ttmx)) %>%
     transformMats(TRUE)
-  variables <- readr::read_tsv(variables_file, show_col_types = FALSE) %>%
+  variables_original <- readr::read_tsv(variables_file, show_col_types = FALSE)
+  variables <- variables_original %>%
     dplyr::select(.data$`_id`, # keep id column
            cws = stringr::str_replace(modelname, "(.+).LENGTH.*", "_cws.\\1"), # context words column
            !dplyr::starts_with("_") # columns without prefix, e.g. 'sense', if they exist
     ) %>%
     dplyr::mutate(cws = stringr::str_split(.data$cws, ";"))
+
+  ctxt_name <- stringr::str_replace(modelname, "(.+).LENGTH.*", "_ctxt.\\1")
+  if (ctxt_name %in% colnames(variables_original)) variables[['ctxt']] <- variables_original[[ctxt_name]]
   tokens <- intersect(row.names(dstmtx), variables$`_id`)
 
   coords <- readr::read_tsv(coords_file, show_col_types = FALSE) %>%
