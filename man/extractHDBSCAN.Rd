@@ -17,7 +17,7 @@ extractHDBSCAN(dstmtx, minPts = 8, includePlot = FALSE)
 List: the \code{df} element is a \link[tibble:tibble-package]{tibble} with information per token:
 \itemize{
 \item{\strong{_id}: }{comes from the rownames of \code{dstmtx}}
-\item{\strong{clusters}: }{gives the clustering of the elements}
+\item{\strong{cluster}: }{gives the clustering of the elements}
 \item{\strong{membprob}: }{indicates membership probabilities}
 \item{\strong{eps}: }{returns the epsilon value}
 }

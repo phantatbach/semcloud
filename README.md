@@ -6,22 +6,28 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of semcloud is to …
+The goal of semcloud is to process the output of the Python Workflow of
+the Nephological Semantics project (coming soon) and prepare it to be
+used with [NephoVis](https://qlvl.github.io/NephoVis).
 
 ## Installation
 
 You can install the github development version with:
 
 ``` r
-remotes::install_github("montesmariana/semcloud")
+devtools::install_github("montesmariana/semcloud")
 ```
 
 ## Example
 
-Coming soon.
+You can find a notebook with the workflow this package is meant to
+support as a vignette of the package. To access it, you’ll have to
+specify that vignettes must be built:
 
-This code is meant to work in a pipeline with some Python packages (to
-be deployed) and the [NephoVis](https://qlvl.github.io/NephoVis) tool.
+``` r
+devtools::install_github("montesmariana/semcloud", build_vignettes = T)
+vignette('processClouds', 'semcloud')
+```
 
 ## License
 
