@@ -17,7 +17,7 @@ used with [NephoVis](https://qlvl.github.io/NephoVis).
 You can install the github development version with:
 
 ``` r
-devtools::install_github("montesmariana/semcloud")
+remotes::install_github("montesmariana/semcloud")
 ```
 
 ## Example
