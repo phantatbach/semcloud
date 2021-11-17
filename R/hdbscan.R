@@ -23,6 +23,7 @@
 #'
 #' @importFrom rlang .data
 extractHDBSCAN <- function(dstmtx, minPts = 8, includePlot = FALSE) {
+  requireHere('dbscan')
   h <- dbscan::hdbscan(x = stats::as.dist(dstmtx), minPts = minPts)
   clusters <- stats::setNames(as.integer(h$cluster), row.names(dstmtx))
   membprob <- stats::setNames(h$membership_prob, row.names(dstmtx))
