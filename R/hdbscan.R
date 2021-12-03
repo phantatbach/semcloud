@@ -90,10 +90,12 @@ cwsForClusters <- function(variables, cws_column, cluster_column, b=1){
     clus <- dat[[cluster_column]]
     cws <- dat[[cws_column]][[1]]
     for (cw in unique(cws)) {
-      if (is.na(cw)) {
-        next
-      }
-      clus_cws_matrix[clus, cw] <- clus_cws_matrix[clus, cw] + 1
+      attempt <- try(
+        {clus_cws_matrix[clus,  cw] <- clus_cws_matrix[clus,  cw] + 1},
+        silent = T)
+      if (inherits(attempt, 'try-error')) {
+        message(sprintf("cw is '%s' and cluster is '%s'", cw, clus))
+        }
     }
   }
   purrr::map_df(as.character(clusters), function(clus) {

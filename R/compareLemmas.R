@@ -97,7 +97,8 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
     distmtx <- readr::read_tsv(distfile, show_col_types = FALSE) %>%
       matricizeCloud() %>% stats::as.dist()
   } else {
-    distances <- customDist(models.names, input_dir, transformed = transformed, fun = fun, row_selection = row_selection)
+    distances <- customDist(models.names, input_dir,
+                            transformed = transformed, fun = fun, row_selection = row_selection)
     suffix <- if (fun == "euclidean") "" else fun
 
     distmtx <- getDistMtx(distances, output_dir, lemma, suffix)
