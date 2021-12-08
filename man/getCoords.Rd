@@ -16,7 +16,8 @@ getCoords(fit, modelname, rownames, d = "", source = "tsne")
 \item{d}{Output from previous run or, if it's the first run, empty string.}
 
 \item{source}{Technique used in dimensionality reduction: either "mds"
-for output from \code{\link[vegan]{metaMDS}} or "tsne" for \code{\link[Rtsne]{Rtsne}}
+for output from \code{\link[vegan]{metaMDS}}, "tsne" for \code{\link[Rtsne]{Rtsne}},
+"umap" for \code{\link[umap]{umap}}.
 (it matches \code{technique} from \code{\link{getFit}}).}
 }
 \value{

@@ -17,8 +17,8 @@
 #'   and then a \code{dist} object
 #' @param dim number of dimensions, by default 2. As argument \code{k} for
 #'   \code{\link[vegan]{metaMDS}} and \code{dims} for \code{\link[Rtsne]{Rtsne}}
-#' @param technique either "mds" to run \code{\link[vegan]{metaMDS}} or
-#'   "tsne" to run \code{\link[Rtsne]{Rtsne}}
+#' @param technique either "mds" to run \code{\link[vegan]{metaMDS}},
+#'   "tsne" to run \code{\link[Rtsne]{Rtsne}} or "umap" to run \code{\link[umap]{umap}}
 #' @param perp perplexity value for \code{\link[Rtsne]{Rtsne}}, default is 30.
 #'   This value is ignored when \code{\link[vegan]{metaMDS}} is run.
 #' @param seed seed to keep randomness at check
@@ -29,15 +29,16 @@ getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
   set.seed(seed)
   dst <- stats::as.dist(as.matrix(d))
   if (technique == 'mds') {
-    fit <- vegan::metaMDS(dst, k=dim, trymax=20, trace=FALSE)
+    vegan::metaMDS(dst, k=dim, trymax=20, trace=FALSE)
   } else if (technique == "tsne") {
-    fit <- Rtsne::Rtsne(dst, dims=dim, perplexity=perp,
+    Rtsne::Rtsne(dst, dims=dim, perplexity=perp,
                         theta=0.0, check.duplicates = FALSE,
                         max_iter = 1000, is_distance = TRUE)
+  } else if (technique == "umap") {
+    umap::umap(dst, input="dist")
   } else {
-    stop("`technique` must be 'mds' or 'tsne'.")
+    stop("`technique` must be 'mds', 'tsne' or 'umap'.")
   }
-  return(fit)
 }
 
 #' Extract coordinates from fit
@@ -47,7 +48,8 @@ getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
 #' @param rownames List of names for the rows
 #' @param d Output from previous run or, if it's the first run, empty string.
 #' @param source Technique used in dimensionality reduction: either "mds"
-#'    for output from \code{\link[vegan]{metaMDS}} or "tsne" for \code{\link[Rtsne]{Rtsne}}
+#'    for output from \code{\link[vegan]{metaMDS}}, "tsne" for \code{\link[Rtsne]{Rtsne}},
+#'    "umap" for \code{\link[umap]{umap}}.
 #'    (it matches `technique` from \code{\link{getFit}}).
 #'
 #' @return a [tibble][tibble::tibble-package] with the coordinates of each element.
@@ -61,8 +63,11 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
   } else if (source == "tsne") { #output of Rtsne
     x = fit$Y[,1]
     y = fit$Y[,2]
+  } else if (source == "umap") {
+    x = fit$layout[,1]
+    y = fit$layout[,2]
   } else {
-    stop("`source` must be 'mds' or 'tsne'.")
+    stop("`source` must be 'mds', 'tsne' or 'umap'.")
   }
   df <- tibble::tibble(
     `_id` = rownames,

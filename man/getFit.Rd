@@ -13,8 +13,8 @@ and then a \code{dist} object}
 \item{dim}{number of dimensions, by default 2. As argument \code{k} for
 \code{\link[vegan]{metaMDS}} and \code{dims} for \code{\link[Rtsne]{Rtsne}}}
 
-\item{technique}{either "mds" to run \code{\link[vegan]{metaMDS}} or
-"tsne" to run \code{\link[Rtsne]{Rtsne}}}
+\item{technique}{either "mds" to run \code{\link[vegan]{metaMDS}},
+"tsne" to run \code{\link[Rtsne]{Rtsne}} or "umap" to run \code{\link[umap]{umap}}}
 
 \item{perp}{perplexity value for \code{\link[Rtsne]{Rtsne}}, default is 30.
 This value is ignored when \code{\link[vegan]{metaMDS}} is run.}
