@@ -27,7 +27,8 @@
 #' @export
 getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
   set.seed(seed)
-  dst <- stats::as.dist(as.matrix(d))
+  mat <- as.matrix(d)
+  dst <- stats::as.dist(mat)
   if (technique == 'mds') {
     vegan::metaMDS(dst, k=dim, trymax=20, trace=FALSE)
   } else if (technique == "tsne") {
@@ -35,7 +36,7 @@ getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
                         theta=0.0, check.duplicates = FALSE,
                         max_iter = 1000, is_distance = TRUE)
   } else if (technique == "umap") {
-    umap::umap(dst, input="dist")
+    umap::umap(mat, input="dist")
   } else {
     stop("`technique` must be 'mds', 'tsne' or 'umap'.")
   }
