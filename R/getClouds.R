@@ -59,7 +59,7 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
       perp <- readr::parse_integer(stringr::str_extract(solutions[[sol]], "[0-9]+"))
 
       # dimensionality reduction
-      if (technique == "mds" | nrow(dists)/perp > 3) {
+      if (technique != "tsne" | nrow(dists)/perp > 3) {
         # run algorithm
         fit <- getFit(dists, dim = 2, technique = technique, perp = perp)
 
