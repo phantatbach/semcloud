@@ -9,7 +9,7 @@ transformMats(mat, asDist = TRUE)
 \arguments{
 \item{mat}{Distance matrix to transform}
 
-\item{asDist}{Boolean: whether to force the matrix into a symmetric distance matrix.}
+\item{asDist}{Boolean: whether to force the matrix into an euclidean distance matrix.}
 }
 \value{
 Double logged transformation of ranked rows of the input matrix,

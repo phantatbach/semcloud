@@ -71,11 +71,12 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' Compare models of a lemma
 #'
 #' Compute pairwise distances between the lemmas, store the distance matrix,
-#' reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary..
+#' reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary.
 #'
 #' @param lemma Name of the lemma, for the filenames
 #' @param output_dir Directory where the model information is and will be stored
 #' @inheritParams customDist
+#' @param overwrite If FALSE and the models.dist file exists, it will not be created again.
 #'
 #' @return a [tibble][tibble::tibble-package] with minimal information
 #' @export
@@ -83,7 +84,8 @@ customDist <- function(mnames, input_dir, transformed = TRUE,
 #' @importFrom rlang .data
 compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
                       fun = "euclidean",
-                      tokens_suffix = ".ttmx.dist.pac", row_selection = vector()){
+                      tokens_suffix = ".ttmx.dist.pac", row_selection = vector(),
+                      overwrite = FALSE){
 
   # load data on the models
   models <- readr::read_tsv(file.path(output_dir, paste0(lemma, '.models.tsv')),
@@ -93,7 +95,7 @@ compLemma <- function(lemma, input_dir, output_dir, transformed = TRUE,
   models.names <- models$`_model`
 
   distfile <- file.path(output_dir, paste0(lemma, ".models.dist.tsv"))
-  if (file.exists(distfile)) {
+  if (!overwrite & file.exists(distfile)) {
     distmtx <- readr::read_tsv(distfile, show_col_types = FALSE) %>%
       matricizeCloud() %>% stats::as.dist()
   } else {

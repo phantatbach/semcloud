@@ -17,12 +17,17 @@
 #' @param lemma Name of the lemma, for filenames
 #' @param solutions Named list of techniques to run for visualization possible `technique` values in \code{\link{getFit}}.
 #' @param logrank Whether to transform the matrices with \code{\link{transformMats}}.
-#' @param type Whether to open the files with \code{\link{tokensFromPac}} (for "token") or \code{\link{focdistsFromCsv}} (otherwise).
+#' @param logdist Whether euclidean distances should be computed between the rows
+#'   of the transformed matrices (when \code{logrank} is \code{TRUE}). Otherwise,
+#'   the matrix of log-transformed ranks is only made symmetric.
+#' @param type Whether to open the files with \code{\link{tokensFromPac}}
+#'   (for "token") or \code{\link{focdistsFromCsv}} (otherwise).
 #' @param row_selection List of row (and column) names to subset the matrices.
 #'
 #' @return List of stresses (emtpy if "mds" is not given.)
 #' @export
-getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logrank = TRUE, type = "token", row_selection = vector()){
+getClouds <- function(input_dir, output_dir, files_list, lemma, solutions,
+                      logrank = TRUE, logdist = TRUE, type = "token", row_selection = vector()){
 
   d <- purrr::map(solutions, function(solution){ # set up main file
     suffix <- if (type == "token") ".tsv" else ".cws.tsv"
@@ -51,7 +56,7 @@ getClouds <- function(input_dir, output_dir, files_list, lemma, solutions, logra
       dists <- dists[row_subset, row_subset]
     }
 
-    if (logrank) { dists <- transformMats(dists, TRUE) } # log-transform the matrix
+    if (logrank) { dists <- transformMats(dists, logdist) } # log-transform the matrix
 
     for (sol in names(solutions)) { # for each of the "solutions"
 

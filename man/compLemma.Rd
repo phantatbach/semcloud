@@ -11,7 +11,8 @@ compLemma(
   transformed = TRUE,
   fun = "euclidean",
   tokens_suffix = ".ttmx.dist.pac",
-  row_selection = vector()
+  row_selection = vector(),
+  overwrite = FALSE
 )
 }
 \arguments{
@@ -28,11 +29,13 @@ compLemma(
 \item{tokens_suffix}{Suffix to add to the model name in the file names of the distance matrices.}
 
 \item{row_selection}{List of row (and column) names to subset the matrices.}
+
+\item{overwrite}{If FALSE and the models.dist file exists, it will not be created again.}
 }
 \value{
 a \link[tibble:tibble-package]{tibble} with minimal information
 }
 \description{
 Compute pairwise distances between the lemmas, store the distance matrix,
-reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary..
+reduce to two dimensions with \code{\link[vegan]{metaMDS}}, store and return summary.
 }

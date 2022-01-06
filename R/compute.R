@@ -13,8 +13,7 @@
 #'  \code{\link[Rtsne]{Rtsne}} uses as default parameters
 #'  \code{theta=0.0, check.duplicates = FALSE, max_iter = 1000}.
 #'
-#' @param d distance matrix, which will be forced into a \code{matrix} object
-#'   and then a \code{dist} object
+#' @param d distance matrix as a \code{matrix}
 #' @param dim number of dimensions, by default 2. As argument \code{k} for
 #'   \code{\link[vegan]{metaMDS}} and \code{dims} for \code{\link[Rtsne]{Rtsne}}
 #' @param technique either "mds" to run \code{\link[vegan]{metaMDS}},
@@ -27,8 +26,7 @@
 #' @export
 getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
   set.seed(seed)
-  mat <- as.matrix(d)
-  dst <- stats::as.dist(mat)
+  dst <- stats::as.dist(d)
   if (technique == 'mds') {
     vegan::metaMDS(dst, k=dim, trymax=20, trace=FALSE)
   } else if (technique == "tsne") {
@@ -36,7 +34,7 @@ getFit <- function(d, dim = 2, technique, perp = 30, seed = 8541){
                         theta=0.0, check.duplicates = FALSE,
                         max_iter = 1000, is_distance = TRUE)
   } else if (technique == "umap") {
-    umap::umap(mat, input="dist")
+    umap::umap(d, input="dist")
   } else {
     stop("`technique` must be 'mds', 'tsne' or 'umap'.")
   }

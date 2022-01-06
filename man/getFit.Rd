@@ -7,8 +7,7 @@
 getFit(d, dim = 2, technique, perp = 30, seed = 8541)
 }
 \arguments{
-\item{d}{distance matrix, which will be forced into a \code{matrix} object
-and then a \code{dist} object}
+\item{d}{distance matrix as a \code{matrix}}
 
 \item{dim}{number of dimensions, by default 2. As argument \code{k} for
 \code{\link[vegan]{metaMDS}} and \code{dims} for \code{\link[Rtsne]{Rtsne}}}

@@ -11,6 +11,7 @@ getClouds(
   lemma,
   solutions,
   logrank = TRUE,
+  logdist = TRUE,
   type = "token",
   row_selection = vector()
 )
@@ -28,7 +29,12 @@ getClouds(
 
 \item{logrank}{Whether to transform the matrices with \code{\link{transformMats}}.}
 
-\item{type}{Whether to open the files with \code{\link{tokensFromPac}} (for "token") or \code{\link{focdistsFromCsv}} (otherwise).}
+\item{logdist}{Whether euclidean distances should be computed between the rows
+of the transformed matrices (when \code{logrank} is \code{TRUE}). Otherwise,
+the matrix of log-transformed ranks is only made symmetric.}
+
+\item{type}{Whether to open the files with \code{\link{tokensFromPac}}
+(for "token") or \code{\link{focdistsFromCsv}} (otherwise).}
 
 \item{row_selection}{List of row (and column) names to subset the matrices.}
 }

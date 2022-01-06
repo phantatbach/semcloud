@@ -6,7 +6,7 @@
 #' Log-transform distance matrices
 #'
 #' @param mat Distance matrix to transform
-#' @param asDist Boolean: whether to force the matrix into a symmetric distance matrix.
+#' @param asDist Boolean: whether to force the matrix into an euclidean distance matrix.
 #'
 #' @return Double logged transformation of ranked rows of the input matrix,
 #'  as \code{matrix}.
@@ -16,7 +16,7 @@ transformMats <- function(mat, asDist = TRUE){
   if (asDist) {
     return(as.matrix(stats::dist(ranked, diag=T, upper = T)))
   } else {
-    return(ranked)
+    return(as.matrix(stats::as.dist(ranked)))
   }
 }
 
