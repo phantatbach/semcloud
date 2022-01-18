@@ -131,7 +131,18 @@ clusterHDBSCAN <- function(m) {
 clusterSeparation <- function(m) {
   if (!requireNamespace('cluster', quietly = TRUE)) {
     stop("Package `cluster` or `semvar` needed.")
-    }
+  }
+
+  sil_func <- function(dists, classes){
+    sils <- summary(cluster::silhouette(as.numeric(classes), dists))$clus.avg.widths
+    clus_names <- names(sils)
+    dim(sils) <- NULL
+    names(sils) <- clus_names
+    sils
+  }
+  knn_func <- function(dists, classes){
+    separationkNN(dists, classes, k = 8)$classqual
+  }
 
   classes <- as.character(m$cluster)
   if (length(unique(classes)) == 1) return(tibble::tibble(cluster = unique(classes)))
@@ -150,10 +161,10 @@ clusterSeparation <- function(m) {
 
   tibble::tibble(
     cluster = unique(classes),
-    kNN_full = separationkNN(full_dists, classes, k = 8)$classqual[.data$cluster],
-    SIL_full = summary(cluster::silhouette(as.numeric(classes), full_dists))$clus.avg.widths[.data$cluster],
-    kNN_no_noise = separationkNN(no_noise, classes[classes != '0'], k = 8)$classqual[.data$cluster],
-    SIL_no_noise = summary(cluster::silhouette(as.numeric(classes[classes != '0']), no_noise))$clus.avg.width[.data$cluster],
+    kNN_full = knn_func(full_dists, classes)[.data$cluster],
+    SIL_full = sil_func(full_dists, classes)[.data$cluster],
+    kNN_no_noise = knn_func(no_noise, classes[classes != '0'])[.data$cluster],
+    SIL_no_noise = sil_func(no_noise, classes[classes != '0'])[.data$cluster]
   )
 }
 
