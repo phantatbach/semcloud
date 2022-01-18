@@ -20,6 +20,7 @@ Imports:
     magrittr,
     purrr,
     R.utils,
+    Rdpack,
     readr,
     rlang (>= 0.1.2),
     stringr,
@@ -38,6 +39,8 @@ Suggests:
     textreuse,
     vegan,
     testthat (>= 3.0.0),
-    umap
+    umap,
+    semvar
+RdMacros: Rdpack
 VignetteBuilder: knitr
 Config/testthat/edition: 3
