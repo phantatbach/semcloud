@@ -1,0 +1,21 @@
+citHeader("To cite semcloud in publications use:")
+
+citEntry(
+  entry    = "Manual",
+  title    = "semcloud",
+  author   = "Mariana Montes",
+  year     = 2021,
+  url      = "https://github.com/montesmariana/semcloud",
+  doi      = "10.5281/zenodo.5596374",
+  textVersion = "Montes, Mariana. (2021). semcloud (0.1.0). Zenodo. https://doi.org/10.5281/zenodo.5596374"
+)
+
+citEntry(
+  entry    = "PhdThesis",
+  title    = "Cloudspotting: Visual analytics for distributional semantics",
+  author   = "Mariana Montes",
+  year     = 2021,
+  url      = "https://cloudspotting.marianamontes.me/",
+  school   = "KU Leuven, Belgium",
+  textVersion = "Montes, Mariana. (2021). *Cloudspotting. Visual Analytics for distributional semantics*. PhD Dissertation, KU Leuven."
+)
