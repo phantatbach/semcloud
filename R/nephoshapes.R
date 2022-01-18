@@ -163,9 +163,11 @@ clusterSemvar <- function(m) {
 #'    on the Nephological Shapes from \insertCite{montes_2021;textual}{semcloud}
 #'    (see \href{https://cloudspotting.marianamontes.me/shapes.html}{Chapter 5}
 #'    for a full description and examples).
-#' @export
+#'
 #' @references
 #'   \insertAllCited{}
+#'
+#' @export
 #'
 #' @examples
 #' \dontrun{
