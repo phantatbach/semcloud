@@ -27,8 +27,35 @@ support as a vignette of the package. To access it, you’ll have to
 specify that vignettes must be built:
 
 ``` r
-devtools::install_github("montesmariana/semcloud", build_vignettes = T)
+remotes::install_github("montesmariana/semcloud", build_vignettes = T)
 vignette('processClouds', 'semcloud')
+```
+
+### Cloud classification
+
+Based on the output from the code shown in the vignette, it is possible
+to classify the clouds as shown in [Chapter 5 of Montes
+(2021)](https://cloudspotting.montesmariana.me) by running the following
+code:
+
+``` r
+models <- readRDS('/output/of/summarizeHDBSCAN')
+ttmx_dir <- 'path/to/distance/matrices'
+
+# For one model
+lname <- names(models)[[1]]
+mname <- names(models[[lname]]$medoidCoords)[[1]]
+
+classifyModel(models[[lname]]$medoidCoords[[1]],
+             names(models[[lname]]$medoidCoords)[[1]],
+             file.path(ttmx_dir, lname))
+             
+# For all models, all lemmas
+classification <- purrr::imap_dfr(models, function(ldata, lname){
+    purrr::imap_dfr(models[[lname]]$medoidCoords, classifyModel,
+    ttmx_dir = file.path(ttmx_dir, lname)) %>% 
+    dplyr::mutate(lemma = lname)
+})
 ```
 
 ## License
