@@ -79,14 +79,14 @@ clusterDistance <- function(clustering, dists){
 #'
 #' @importFrom rlang .data
 clusterHDBSCAN <- function(m) {
-  noise_eps <- m %>%
+  min_eps <- m %>%
     dplyr::filter(!is.na(.data$eps)) %>%
     dplyr::group_by(.data$cluster) %>%
     dplyr::summarize(eps = min(.data$eps)) %>%
-    tibble::deframe() %>% .data[['0']]
+    tibble::deframe()
 
   m %>%
-    dplyr::mutate(deeper_than_noise = .data$eps < noise_eps) %>%
+    dplyr::mutate(deeper_than_noise = if ('0' %in% names(min_eps)) .data$eps < min_eps[['0']] else TRUE) %>%
     dplyr::group_by(.data$cluster) %>%
     dplyr::mutate(
       cws_n = purrr::map_dbl(.data$cws, length),
@@ -124,6 +124,18 @@ clusterHDBSCAN <- function(m) {
 #'
 #' @importFrom rlang .data
 clusterSemvar <- function(m) {
+  if (requireNamespace('cluster', quietly = TRUE)) {
+    sil_func <- function(dst, classes){
+      summary(cluster::silhouette(as.numeric(classes), dst))$clus.avg.widths
+    }
+  } else if (requireNamespace("semvar", quietly = TRUE)) {
+    sil_func <- function(dst, classes){
+      semvar::clusterqualSIL(dst, classes)$classqual
+    }
+  } else {
+    stop("Package `cluster` or `semvar` needed.")
+  }
+
   if (length(unique(m$cluster)) == 1) return()
 
   classes <- as.character(m$cluster)
@@ -142,9 +154,9 @@ clusterSemvar <- function(m) {
   tibble::tibble(
     cluster = unique(classes),
     kNN_full = semvar::clusterqualkNN(full_dists, classes, k = 8)$classqual[.data$cluster],
-    SIL_full = semvar::clusterqualSIL(full_dists, classes)$classqual[.data$cluster],
+    SIL_full = sil_func(full_dists, classes)[.data$cluster],
     kNN_no_noise = semvar::clusterqualkNN(no_noise, classes[classes != '0'], k = 8)$classqual[.data$cluster],
-    SIL_no_noise = semvar::clusterqualSIL(no_noise, classes[classes != '0'])$classqual[.data$cluster],
+    SIL_no_noise = sil_func(no_noise, classes[classes != '0'])[.data$cluster],
   )
 }
 
@@ -175,7 +187,6 @@ clusterSemvar <- function(m) {
 #' }
 #' @importFrom Rdpack reprompt
 classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
-  requireNamespace("semvar", quietly = TRUE)
   m <- mdata$coords
 
   clustering <- tibble::deframe(dplyr::select(m, '_id', 'cluster'))
@@ -219,5 +230,6 @@ classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
 
   model_class %>%
     dplyr::mutate(mname = mname, mcat = clouds) %>%
-    dplyr::select('mname', 'mcat', 'cluster', 'cloud_type', 'Hail', dplyr::everything())
+    dplyr::select('mname', 'mcat', 'cluster', 'cloud_type', 'Hail', dplyr::everything()) %>%
+    dplyr::arrange(.data$cluster)
 }
