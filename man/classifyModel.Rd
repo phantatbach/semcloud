@@ -19,7 +19,7 @@ plus the suffix.}
 }
 \value{
 A table with one row per cluster in the model, the columns created by
-\code{\link{clusterSemvar}}, \code{\link{clusterHDBSCAN}} and
+\code{\link{clusterSeparation}}, \code{\link{clusterHDBSCAN}} and
 \code{\link{clusterDistance}} and the classification of each cluster based
 on the Nephological Shapes from \insertCite{montes_2021;textual}{semcloud}
 (see \href{https://cloudspotting.marianamontes.me/shapes.html}{Chapter 5}

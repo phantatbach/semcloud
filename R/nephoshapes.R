@@ -1,3 +1,8 @@
+# semcloud: Post-processing of token-level clouds.
+# Copyright (C) 2021 Mariana Montes
+#
+# See full notice in README.md file.
+
 #' Compute distances per cluster
 #'
 #' @param clustering Named vector with token IDs as names and (HDBSCAN) clusters
@@ -116,29 +121,21 @@ clusterHDBSCAN <- function(m) {
 #' @inheritParams clusterHDBSCAN
 #'
 #' @return A tibble with one row per cluster and output from
-#'   \code{\link[semvar]{clusterqualkNN}} and \code{\link[semvar]{clusterqualSIL}}
+#'   \code{\link{separationkNN}} and \code{\link[cluster]{silhouette}}
 #'   for each class, based on the \emph{coordinates} in the input and both including
 #'   and excluding noise tokens.
 #'
 #' @export
 #'
 #' @importFrom rlang .data
-clusterSemvar <- function(m) {
-  if (requireNamespace('cluster', quietly = TRUE)) {
-    sil_func <- function(dst, classes){
-      summary(cluster::silhouette(as.numeric(classes), dst))$clus.avg.widths
-    }
-  } else if (requireNamespace("semvar", quietly = TRUE)) {
-    sil_func <- function(dst, classes){
-      semvar::clusterqualSIL(dst, classes)$classqual
-    }
-  } else {
+clusterSeparation <- function(m) {
+  if (!requireNamespace('cluster', quietly = TRUE)) {
     stop("Package `cluster` or `semvar` needed.")
-  }
-
-  if (length(unique(m$cluster)) == 1) return()
+    }
 
   classes <- as.character(m$cluster)
+  if (length(unique(classes)) == 1) return(tibble::tibble(cluster = unique(classes)))
+
   if (min(table(classes)) == 1) { # cover for the occasional single noise point :)
     removed <- names(table(classes)[table(classes) == 1])
     m <- m %>% dplyr::filter(.data$cluster != removed)
@@ -153,10 +150,10 @@ clusterSemvar <- function(m) {
 
   tibble::tibble(
     cluster = unique(classes),
-    kNN_full = semvar::clusterqualkNN(full_dists, classes, k = 8)$classqual[.data$cluster],
-    SIL_full = sil_func(full_dists, classes)[.data$cluster],
-    kNN_no_noise = semvar::clusterqualkNN(no_noise, classes[classes != '0'], k = 8)$classqual[.data$cluster],
-    SIL_no_noise = sil_func(no_noise, classes[classes != '0'])[.data$cluster],
+    kNN_full = separationkNN(full_dists, classes, k = 8)$classqual[.data$cluster],
+    SIL_full = summary(cluster::silhouette(as.numeric(classes), full_dists))$clus.avg.widths[.data$cluster],
+    kNN_no_noise = separationkNN(no_noise, classes[classes != '0'], k = 8)$classqual[.data$cluster],
+    SIL_no_noise = summary(cluster::silhouette(as.numeric(classes[classes != '0']), no_noise))$clus.avg.width[.data$cluster],
   )
 }
 
@@ -170,7 +167,7 @@ clusterSemvar <- function(m) {
 #'   plus the suffix.
 #'
 #' @return A table with one row per cluster in the model, the columns created by
-#'    \code{\link{clusterSemvar}}, \code{\link{clusterHDBSCAN}} and
+#'    \code{\link{clusterSeparation}}, \code{\link{clusterHDBSCAN}} and
 #'    \code{\link{clusterDistance}} and the classification of each cluster based
 #'    on the Nephological Shapes from \insertCite{montes_2021;textual}{semcloud}
 #'    (see \href{https://cloudspotting.marianamontes.me/shapes.html}{Chapter 5}
@@ -199,34 +196,38 @@ classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
                   same_cluster = clustering[.data$token_B] == .data$cluster_A)
 
   model_data <- dplyr::full_join(
-    clusterSemvar(m), clusterHDBSCAN(m),
+    clusterSeparation(m), clusterHDBSCAN(m),
     by = 'cluster'
   ) %>%
     dplyr::full_join(clusterDistance(clustering, dists), by = 'cluster')
 
-
-  model_class <- dplyr::mutate(
-    model_data,
-    cloud_type = dplyr::case_when(
-      .data$cluster == '0' ~ "Cirrostratus",
-      .data$rel_size >= 0.5 ~ "Cumulonimbus",
-      .data$kNN_full >= 0.75 & .data$SIL_full >= 0.5 &
-        .data$mean_inner_dist <= 0.5 &
-        (.data$deeper_than_noise >= 0.9 | sum(.data$rel_size) >= 0.9) ~ "Cumulus",
-      (sum(.data$rel_size) <= 0.25 | .data$SIL_full >= 0.5 | .data$mean_inner_dist <= 0.2) &
-        (.data$deeper_than_noise > 0.5 | sum(.data$rel_size) > 0.9) ~ "Stratocumulus",
-      TRUE ~ "Cirrus"
-    ),
-    Hail = .data$max_identicals >= 8
-  )
-
-  {
-    clouds <- sort(unique(model_class$cloud_type))
-    if (length(clouds) > 1) clouds <- setdiff(clouds, "Cirrostratus")
-    if (sum(model_class$Hail) > 1) clouds <- c(clouds, 'Hail')
-    clouds <- paste(clouds, collapse = '-')
-
+  if (nrow(model_data) == 1) {
+    model_class <- dplyr::mutate(
+      model_data,
+      cloud_type = "Cirrostratus",
+      Hail = .data$max_identicals >= 8
+    )
+    clouds <- 'Cirrostratus'
+  } else {
+    model_class <- dplyr::mutate(
+      model_data,
+      cloud_type = dplyr::case_when(
+        .data$cluster == '0' ~ "Cirrostratus",
+        .data$rel_size >= 0.5 ~ "Cumulonimbus",
+        .data$kNN_full >= 0.75 & .data$SIL_full >= 0.5 &
+          .data$mean_inner_dist <= 0.5 &
+          (.data$deeper_than_noise >= 0.9 | sum(.data$rel_size) >= 0.9) ~ "Cumulus",
+        (sum(.data$rel_size) <= 0.25 | .data$SIL_full >= 0.5 | .data$mean_inner_dist <= 0.2) &
+          (.data$deeper_than_noise > 0.5 | sum(.data$rel_size) > 0.9) ~ "Stratocumulus",
+        TRUE ~ "Cirrus"
+      ),
+      Hail = .data$max_identicals >= 8
+    )
+    clouds <- setdiff(sort(unique(model_class$cloud_type)), 'Cirrostratus')
   }
+
+  if (sum(model_class$Hail) > 1) clouds <- c(clouds, 'Hail')
+  clouds <- paste(clouds, collapse = '-')
 
   model_class %>%
     dplyr::mutate(mname = mname, mcat = clouds) %>%

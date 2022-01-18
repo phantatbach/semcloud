@@ -39,8 +39,7 @@ Suggests:
     textreuse,
     vegan,
     testthat (>= 3.0.0),
-    umap,
-    semvar
+    umap
 RdMacros: Rdpack
 VignetteBuilder: knitr
 Config/testthat/edition: 3
