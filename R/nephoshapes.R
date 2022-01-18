@@ -241,7 +241,7 @@ classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
   clouds <- paste(clouds, collapse = '-')
 
   model_class %>%
-    dplyr::mutate(mname = mname, mcat = clouds) %>%
-    dplyr::select('mname', 'mcat', 'cluster', 'cloud_type', 'Hail', dplyr::everything()) %>%
+    dplyr::mutate(model = mname, maincat = clouds) %>%
+    dplyr::select('model', 'maincat', 'cluster', 'cloud_type', 'Hail', dplyr::everything()) %>%
     dplyr::arrange(.data$cluster)
 }
