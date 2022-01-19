@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# semcloud
+# semcloud <img src="man/figures/logo.png" align="right" />
 
 <!-- badges: start -->
 
@@ -9,8 +9,10 @@
 <!-- badges: end -->
 
 The goal of semcloud is to process the output of the Python Workflow of
-the Nephological Semantics project (coming soon) and prepare it to be
-used with [NephoVis](https://qlvl.github.io/NephoVis).
+the Nephological Semantics project (combining
+[nephosem](https://github.com/QLVL/nephosem/) and
+[semasioFlow](https://github.com/montesmariana/semasioFlow)) and prepare
+it to be used with [NephoVis](https://qlvl.github.io/NephoVis).
 
 ## Installation
 
@@ -24,7 +26,9 @@ remotes::install_github("montesmariana/semcloud")
 
 You can find a notebook with the workflow this package is meant to
 support as a vignette of the package. To access it, you’ll have to
-specify that vignettes must be built:
+specify that vignettes must be built, or you can find it [in the
+Articles
+section](https://montesmariana.github.io/semcloud/articles/processClouds.html):
 
 ``` r
 remotes::install_github("montesmariana/semcloud", build_vignettes = T)

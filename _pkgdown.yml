@@ -1,6 +1,14 @@
 url: https://montesmariana.github.io/semcloud
+
+home:
+  title: Create token-level clouds
+  description: Post-processing of output from nephosem and semasioFlow
 template:
   bootstrap: 5
+  bootswatch: yeti
+  theme: kate
+  bslib:
+    primary: "#0266a0"
 reference:
 - title: Open nephosem files
   desc: |
