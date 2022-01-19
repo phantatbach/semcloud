@@ -1,4 +1,55 @@
 url: https://montesmariana.github.io/semcloud
 template:
   bootstrap: 5
+reference:
+- title: Open nephosem files
+  desc: |
+    Functions to read nephosem files.
+  contents:
+  - focdistsFromCsv
+  - tokensFromPac
+- title: Process distance matrices
+  desc: |
+    Functions to obtain coordinates and create clouds.
+  contents:
+  - getClouds
+  - getCoords
+  - getFit
+- title: Compare models
+  desc: |
+    Functions to compute distances between models.
+  contents:
+  - getDistMtx
+  - matricizeCloud
+  - compLemma
+  - customDist
+  - ends_with('Mats')
+- title: Weight context words
+  desc: |
+    Functions to create weighted concordance lines.
+  contents:
+  - getContext
+  - setupConcordancer
+  - weightConcordance
+  - weightLemma
+  - starts_with('filter')
+  - ends_with('Filter')
+  - reorderPpmi
+  - cleanWord
+  - correctDistance
+- title: Add HDBSCAN data
+  desc: |
+    Functions to integrate model data with HDBSCAN output.
+  contents:
+  - summarizeHDBSCAN
+  - extractHDBSCAN
+  - cwsForClusters
+  - fscore
+- title: Classify clouds
+  desc: |
+    Functions to classify clusters in nephological shapes.
+  contents:
+  - classifyModel
+  - starts_with("cluster")
+  - separationkNN
 

@@ -10,6 +10,7 @@
 #' @param dists Long format table with one row per pair of tokens (that are not
 #'    the same), the distance between them, the cluster that the first token belongs
 #'    to and whether they both belong to the same cluster.
+#' @param k Number of nearest neighbors to get maximum distance from
 #'
 #' @return A tibble with one row per cluster and various distance-derived values:
 #'    \describe{
@@ -26,15 +27,15 @@
 #'    }
 #' @export
 #' @importFrom rlang .data
-clusterDistance <- function(clustering, dists){
+clusterDistance <- function(clustering, dists, k=8){
   identicals <- tibble::enframe(clustering, 'token_A', 'cluster_A') %>%
     dplyr::mutate(
       identicals = purrr::map_dbl(
         .data$token_A,
         ~nrow(dplyr::filter(dists, .data$token_A == .x, .data$same_cluster, .data$distance < 0.000001))),
-      max_k8 = purrr::map_dbl(
+      max_k = purrr::map_dbl(
         .data$token_A,
-        ~sort(dplyr::filter(dists, .data$token_A == .x, .data$same_cluster)$distance)[8]
+        ~sort(dplyr::filter(dists, .data$token_A == .x, .data$same_cluster)$distance)[k]
       )
     ) %>%
     dplyr::group_by(.data$cluster_A) %>%
@@ -42,9 +43,9 @@ clusterDistance <- function(clustering, dists){
       'min_identicals' = min(.data$identicals),
       'mean_identicals' = mean(.data$identicals),
       'max_identicals' = max(.data$identicals),
-      'min_k8' = min(.data$max_k8),
-      'mean_k8' = mean(.data$max_k8),
-      'max_k8' = max(.data$max_k8)
+      'min_k' = min(.data$max_k),
+      'mean_k' = mean(.data$max_k),
+      'max_k' = max(.data$max_k)
     )
   cluster_distances <- dists %>%
     dplyr::group_by(.data$cluster_A, .data$same_cluster) %>%
@@ -119,6 +120,7 @@ clusterHDBSCAN <- function(m) {
 #' Compute Semvar values on clusters
 #'
 #' @inheritParams clusterHDBSCAN
+#' @param k Number of tokens to compute \code\link{separationkNN}
 #'
 #' @return A tibble with one row per cluster and output from
 #'   \code{\link{separationkNN}} and \code{\link[cluster]{silhouette}}
@@ -128,7 +130,7 @@ clusterHDBSCAN <- function(m) {
 #' @export
 #'
 #' @importFrom rlang .data
-clusterSeparation <- function(m) {
+clusterSeparation <- function(m, k = 8) {
   if (!requireNamespace('cluster', quietly = TRUE)) {
     stop("Package `cluster` or `semvar` needed.")
   }
@@ -141,7 +143,7 @@ clusterSeparation <- function(m) {
     sils
   }
   knn_func <- function(dists, classes){
-    separationkNN(dists, classes, k = 8)$classqual
+    separationkNN(dists, classes, k = k)$classqual
   }
 
   classes <- as.character(m$cluster)
@@ -176,6 +178,8 @@ clusterSeparation <- function(m) {
 #' @param suffix Suffix of the file names for the token-level distance matrices;
 #'   the function assumes that the name of the file is the name of the medoid
 #'   plus the suffix.
+#' @param k Number of nearest neighbors for \code{\link{clusterDistance}}
+#'   and \code{\link{clusterSeparation}}.
 #'
 #' @return A table with one row per cluster in the model, the columns created by
 #'    \code{\link{clusterSeparation}}, \code{\link{clusterHDBSCAN}} and
@@ -194,7 +198,8 @@ clusterSeparation <- function(m) {
 #' purrr::imap_dfr(models$medoidCoords, classifyModel, ttmx_dir = 'path/to/dir')
 #' }
 #' @importFrom Rdpack reprompt
-classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
+classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac',
+                          k = 8){
   m <- mdata$coords
 
   clustering <- tibble::deframe(dplyr::select(m, '_id', 'cluster'))
@@ -207,16 +212,16 @@ classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
                   same_cluster = clustering[.data$token_B] == .data$cluster_A)
 
   model_data <- dplyr::full_join(
-    clusterSeparation(m), clusterHDBSCAN(m),
+    clusterSeparation(m, k), clusterHDBSCAN(m),
     by = 'cluster'
   ) %>%
-    dplyr::full_join(clusterDistance(clustering, dists), by = 'cluster')
+    dplyr::full_join(clusterDistance(clustering, dists, k = k), by = 'cluster')
 
   if (nrow(model_data) == 1) {
     model_class <- dplyr::mutate(
       model_data,
       cloud_type = "Cirrostratus",
-      Hail = .data$max_identicals >= 8
+      Hail = .data$max_identicals >= k
     )
     clouds <- 'Cirrostratus'
   } else {
@@ -232,7 +237,7 @@ classifyModel <- function(mdata, mname, ttmx_dir, suffix = '.ttmx.dist.pac'){
           (.data$deeper_than_noise > 0.5 | sum(.data$rel_size) > 0.9) ~ "Stratocumulus",
         TRUE ~ "Cirrus"
       ),
-      Hail = .data$max_identicals >= 8
+      Hail = .data$max_identicals >= k
     )
     clouds <- setdiff(sort(unique(model_class$cloud_type)), 'Cirrostratus')
   }
