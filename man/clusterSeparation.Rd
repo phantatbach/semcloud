@@ -4,11 +4,13 @@
 \alias{clusterSeparation}
 \title{Compute Semvar values on clusters}
 \usage{
-clusterSeparation(m)
+clusterSeparation(m, k = 8)
 }
 \arguments{
 \item{m}{Tibble with one token per row and HDBSCAN information. The \code{coords}
 element of a model resulting from \code{\link{summarizeHDBSCAN}}.}
+
+\item{k}{Number of tokens to compute \code{\link{separationkNN}}}
 }
 \value{
 A tibble with one row per cluster and output from

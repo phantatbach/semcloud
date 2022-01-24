@@ -18,3 +18,9 @@ Distance between matrix
 Computes the euclidean distance between the individual vectors
 and takes their mean.
 }
+\seealso{
+Other distances: 
+\code{\link{mantelMats}()},
+\code{\link{procMats}()}
+}
+\concept{distances}

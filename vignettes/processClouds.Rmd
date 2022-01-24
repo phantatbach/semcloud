@@ -1,15 +1,16 @@
 ---
-title: "processClouds"
+title: "From semasioFlow to NephoVis"
 author: "Mariana Montes"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{processClouds}
+  %\VignetteIndexEntry{From semasioFlow to NephoVis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "../inst/REFERENCES.bib"
 ---
 
-```{r, include = FALSE}
+```{r, setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -17,11 +18,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-This package is not autonomous: it is designed to support a specific section of a pipeline, so it assumes the input is the output from the `semasioFlow` Python package (which uses the `qlvl` Python package) and prepares the data to be used in [NephoVis](https://github.com/QLVL/NephoVis) and the [Level3 ShinyApp](https://github.com/montesmariana/Level3). This vignette will show you how to do that.
+This package is not autonomous: it is designed to support a specific section of a pipeline,
+meaning that it takes as input output from
+the [`semasioFlow`](https://github.com/montesmariana/semasioFlow) Python package
+(which uses the [`nephosem`](https://qlvl.github.io/nehosem/)) Python package
+and prepares the data to be used in [NephoVis](https://github.com/QLVL/NephoVis) and the [Level3 ShinyApp](https://github.com/montesmariana/Level3).
+This vignette will show the procedure to prepare data for NephoVis, whereas `vignette('HDBSCAN')`
+will go through the HDBSCAN clustering for Level3 and the classification of clouds.
 
 First, next to `semcloud` itself, we will load some packages of the `tidyverse` and `cluster`.
 
-```{r setup}
+```{r libraries}
 library(semcloud)
 library(readr)
 library(dplyr)
@@ -34,25 +41,43 @@ library(rjson) # to store json files
 options(readr.show_col_types = FALSE)
 ```
 
-Then we want to set up the most important paths, which may or may not be in the same directory. By default, the `semasioFlow` workflow will store some things in an `output` directory with a `tokens` subdirectory for token-level matrices and a `cws` directory for type-level matrices. These are going to be the **input** for this processing. On the other hand, `semasioFlow` stores registers in a `github` directory, which you can use to feed data to `NephoVis`. This is going to be our **output** directory. Each of these will have subdirectories for the different lemmas or concepts you might be working on, even if you only have one. This vignette will first show the code needed to work with only one item, and will offer below loops across many items (lemmas, concepts, whatever). 
+Then we want to set up the most important paths, which may or may not be in the same directory. By default, the `semasioFlow` workflow will store the distance matrices in an `output` directory with a `tokens` subdirectory for token-level matrices and a `cws` directory for type-level matrices. These are going to be the **input** for this processing.
+On the other hand, `semasioFlow` stores registers (frequency data of the context words,
+parameter settings of the different models and lists of context words per token)
+in a `nephovis` directory, which you can use to feed data to [NephoVis](https://github.com/qlvl/nephovis). This is going to be our **output** directory.
+Each of these will have subdirectories for the different lemmas or concepts you might be working on, even if you only have one.
+For a semasiological workflow [e.g. @montes_2021] you will use
+lemmas, whereas an onomasiological workflow [e.g. @montes.etal_2021] you will use concepts; the only
+difference is that the latter combines different variants per model. Any mention of lemmas
+in this vignette can be substituted for *concept* in the onomasiological workflow.
 
-# One unit workflow
+First we will look at the different steps when working with one lemma and then sum up with
+a loop over multiple lemmas.
+
+# Single lemma workflow
 
 ```{r directory}
 # based on the directory structure resulting from the Python workflow
 lemma <- 'name_of_lemma'
-base_dir <- "path/to/data" # path for example data
+base_dir <- "path/to/data" # shared path
 input_dir <- file.path(base_dir, "output", "tokens", lemma) # where the data is stored
 cw_dir <- file.path(base_dir, "output", "cws", lemma)
-output_dir <- file.path(base_dir, "github", lemma) # where the data will go
+output_dir <- file.path(base_dir, "nephovis", lemma) # where the data will go
 ```
 
 ## Token coordinates
 
-In order to compute the token coordinates, we first need to decide which solutions we are going to choose, that is, whether we are going to run nMDS and, in the case we run t-SNE, which perplexities we are interested in.
-We might even want to run UMAP (not available yet in this code).
+The first step is to go through the token-level distance matrices and apply dimensionality reduction to obtain only two coordinates for visualization. For that purpose we need to decide which methods we are interested in (in case we want to compare them). The options are:
 
-While in the end I mostly looked at t-SNE with perplexity of 30, I will show the instructions when having more options.
+- `'mds'`: nonmetric multidimensional scaling (ran with `vegan::metaMDS()`)
+
+- `'tsne'`: t-stochastic neighbor embedding (ran with `Rtsne::Rtsne()`), with different perplexities indicated by appending a number to the label, e.g. `'tsne20'`, `'tsne30'`...
+
+- `'umap'`: uniform manifold approximation and projection (ran with `umap::umap()`).
+
+For each technique, we obtain a different solution, which results in a tab-separated file with
+one row per token, a column with IDs and two columns per model: the x and the y coordinates.
+A named list as shown below will inform the code of which techniques to use (the names in the list) and which infixes to use in the file names.
 
 ```{r, solutionsOld}
 # This list works for a loop in the function below and should then be stored as a json file
@@ -64,52 +89,56 @@ for (perp in c(10, 20, 30, 50)) {
 solutions_old
 ```
 
-Note that the examples have only 60 tokens, so using t-SNE, specially with perplexity of 30, is kind of overkill here. We'll go for a lower number.
+For example, the code line below will only run `Rtsne::Rtsne()` with perplexity 30 and store the coordinates in a file called `'name_of_lemma.tsne.30.tsv'`.
+This list must also be stored, to inform NephoVis of the available visualization options and how to find their data.
 
 ```{r, solutions}
-solutions <- list("tsne10" = ".tsne.10")
+solutions <- list("tsne30" = ".tsne.30")
+write(rjson::toJSON(solutions), file.path(output_dir, paste0(lemma, ".solutions.json")))
 ```
 
-Then we can set up some files and store the solutions mapping.
+We also need a list of filenames to obtain the distances from, which we could either read by
+filtering the contents of our `output_dir` or by appending the file extension to the names of the models in our register.
+
 
 ```{r, fileslist}
 suffix <- ".ttmx.dist.pac"
 models_file <- file.path(output_dir, paste0(lemma, '.models.tsv'))
-files_list <- paste0(read_tsv(models_file, lazy = FALSE)$`_model`, suffix)
-write(rjson::toJSON(solutions), file.path(output_dir, paste0(lemma, ".solutions.json")))
-file.exists(file.path(input_dir, files_list[1]))
+files_list <- paste0(read_tsv(models_file)$`_model`, suffix)
 ```
 
-The `semcloud::getClouds()` function groups the full "workflow":
-1. It sets up one empty dataframe per item in solution, which will be stored in a `[lemma].[solution].tsv` file.
+The `getClouds()` function groups the full "workflow":
+
+1. It sets up one empty dataframe per item in `solutions`, which will be filled in with coordinates and stored in a `'[lemma].[solution].tsv'` file.
 
 2. For each file in `files_list`:
 
     2.1 It extracts the model name
 
-    2.2 It loads the file with `semcloud::tokensFromPac()`
+    2.2 It loads the file with `tokensFromPac()`
     
-    2.3 If `logrank = TRUE` (the default), it applies the transformation
+    2.3 If `logrank = TRUE` (the default), it applies the transformation; if `logdist = TRUE` it also *computes* euclidean distances on the log-transformed values instead of just making them symmetric. The clouds in [*Cloudspotting*](https://cloudspotting.marianamontes.me) were generated with `logrank = TRUE, logdist = FALSE`.
     
     2.4 It applies the corresponding algorithm and extracts the coordinates
     
-    2.5 It appends the coordinates as columns preceded by the name of the model to the corresponding dataframe
+    2.5 It appends the coordinates as columns preceded by the name of the model to the corresponding dataframe: `'[modelname].x'`; `'[modelname].y'`.
    
-In addition, if "mds" is one of the algorithms, it will *return* a list with the stress values.
+In addition, if "mds" is one of the algorithms,
+it will *return* a list with the stress values.
 
-```{r, getCloud, message=FALSE, results='hide'}
+```{r, getCloud}
 getClouds(input_dir, output_dir, files_list, lemma, solutions)
 ```
 
-Then you can read your file with `readr::read_tsv()`.
+Then you can read your files with `readr::read_tsv()`.
 
 ```{r, readCloud, eval=FALSE}
-read_tsv(file.path(output_dir, paste0(lemma, ".tsne.10.tsv")))
+read_tsv(file.path(output_dir, paste0(lemma, ".tsne.30.tsv")))
 ```
 
 ## Context words coordinates
 
-For the context words, the workflow is exactly the same as for the tokens. The difference is that the files are saved as `.csv` (because for some reason R cannot read them when they are `.wwmx...pac`) and so it uses the `focdistsFromCsv()` function.
+For the context words, the workflow is exactly the same as for the tokens. The difference is that the files are saved as `'.csv'` (because for some reason R cannot read them when they are `.wwmx...pac`) and so it uses the `focdistsFromCsv()` function. This is indicated by specifying `type = "focdists"`.
 
 ```{r getClouds2, message=FALSE, results='hide'}
 suffix <- ".wwmx.dist.csv"
@@ -120,27 +149,22 @@ getClouds(cw_dir, output_dir, files_list, lemma, solutions, type = "focdists")
 
 ## Model distances and coordinates
 
-The function belows loads the `[lemma].models.tsv` file in the `output_dir` in order to modify it by appending the coordinates from an nMDS on the distances between the models. By default, it will compute "euclidean" distances on the transformed matrices, but the function can be changed with the `fun` argument, and the transformation can be turned off with the `transformed` argument. It returns some data for a register (which I tend to combine across lemmas and store as `euclidean_register.tsv` to tell the index of the visualization which lemmas to offer :)
+The files created by `getClouds()` take care of the visualization in Levels 2 and 3 of NephoVis. For the Level 1 plot, as well as the distance matrix in Level 2 and the selection of medoids, we first need to obtain distances between the models.
+For that purpose, `compLemma()` loads the `'[lemma].models.tsv'` file in the `output_dir` in order to modify it by appending the coordinates from `vegan::metaMDS()` on the distances between the models. By default, it will compute "euclidean" distances on the transformed matrices (see `eucliMats()`), but the function can be changed with the `fun` argument, and the transformation can be turned off with the `transformed` argument. It returns some data for a register, which I tend to combine across lemmas and store as `euclidean_register.tsv` to tell the index of the visualization which lemmas to offer.
 
-Under the hood, it also stores the distance matrix as `[lemma].models.dist.tsv`. If the file already exists, it loads it instead of recomputing the distances.
+Under the hood, it also stores the distance matrix as `[lemma].models.dist.tsv`. If the file already exists, it loads it instead of recomputing the distances. This distance matrix is then used in Level 2 of NephoVis.
 
 ```{r, modelsdist}
 reg <- compLemma(lemma, input_dir, output_dir)
-
-```
-
-The output is a `tibble::tibble()`.
-
-```{r, reg}
-reg
 ```
 
 ## Medoids
 
-The medoids are simply calculated with `cluster::pam()` and some basic information is stored in a `[lemma].medoids.tsv` file. The only important column for the visualization is `medoids`.
+The medoids are simply calculated with `cluster::pam()` and some basic information is stored in a `[lemma].medoids.tsv` file. The only important column for the visualization is `medoids`, which is what NephoVis reads to automatically select the right models.
 
 ```{r pam}
 k <- 8 # number of medoids you want
+
 distmtx <- read_tsv(file.path(output_dir, paste0(lemma, ".models.dist.tsv"))) %>% 
   matricizeCloud() %>% as.dist()
 pam_data <- pam(distmtx, k = k)
@@ -149,14 +173,13 @@ medoid_data <- pam_data$clusinfo %>%
   mutate(medoids = pam_data$medoids, medoid_i = seq(k))
 
 write_tsv(medoid_data, file.path(output_dir, paste0(lemma, ".medoids.tsv")))
-medoid_data
 ```
 
 We can also add the clustering information to the models register.
 
 ```{r pam2}
 models_file <- file.path(output_dir, paste0(lemma, ".models.tsv"))
-read_tsv(models_file, lazy= FALSE) %>% 
+read_tsv(models_file) %>% 
     mutate(
         pam_cluster = pam_data$clustering[`_model`], # add pam-cluster number
         medoid = pam_data$medoids[pam_cluster] # add name of medoid
@@ -164,65 +187,30 @@ read_tsv(models_file, lazy= FALSE) %>%
     write_tsv(models_file)
 ```
 
-## HDBSCAN
+## Further steps
 
-I've mostly computed HDBSCAN among the medoids, but it could certainly be computed for all models. HDBSCAN information, from clustering to membership probabilities or eps, *could* in principle be included for NephoVis, but I haven't done it because the result varies per model, meaning that each token will have about 200 columns for each of them (or 8 if it's only with the medoids, which it's still a lot), and that is hard to incorporate into the tool.
+The visualization can also take advantage of tailored contexts for the different models;
+the code to obtain these columns, based on the output of `semasioFlow.contextwords.listContextwords()` and the data in `'[lemma].variables.tsv'`, is described in `vignette('weightConcordance')`.
 
-Instead, I work with an RDS file with a list of models per lemma, and each model object includes:
-
-- coordinates: the coordinates from t-SNE with perplexity 30, next to other variables in the "variables" dataframe like, in my case, "senses", as well as the tailored list of context words. We add the token-wise HDBSCAN info here
-- cws: distribution of first-order context words across HDBSCAN clusters and their t-SNE coordinates if available
-- (optionally) the normal HDBSCAN plot
-
-```{r hdbscan}
-# You could run it on all the models or just the medoids
-# models <- read_tsv(file.path(output_dir, lpaste0(lemma, ".models.tsv")))$`_model` # all models
-models <- read_tsv(file.path(output_dir, paste0(lemma, ".medoids.tsv")))$medoids # only medoids
-res <- map(setNames(models, models),
-           summarizeHDBSCAN, lemma = lemma,
-           input_dir = input_dir,
-           output_dir = output_dir,
-           coords_name = '.tsne.10')
-
-# I would normally make one of these files for all my lemmas and store it within the github directory above the lemma subdirectories
-to_write <- list()
-to_write[lemma] <- res
-write_rds(to_write, file.path(output_dir, "hdbscan.rds"))
-```
-
-The output has a named list of models:
-
-```{r hdbscan1}
-names(res)
-```
-
-Each of them has a `coords` element with data per token:
-
-```{r hdbscan2}
-res[[1]]$coords
-```
-
-Next to it, there is a `cws` element with data per context word per cluster; if there are no coordinates, they all become zeros:
-
-```{r hdbscan3}
-res[[1]]$cws
-```
+In addition, HDBSCAN clustering and classification of the clusters is covered in `vignette('HDBSCAN')`.
 
 # Loops across multiple lemmas
 
+Below is some code to run the workflow above across multiple lemmas.
+
 ```{r looping, eval = FALSE}
 lemmas <- c('lemma1', 'lemma2', 'lemma3') #or whatever they are
-base_dir <- system.file("extdata") # path for example data
+base_dir <- '/path/to/data'
 input_dir <- file.path(base_dir, "output", "tokens") # where the data is stored
 cw_dir <- file.path(base_dir, "output", "cws")
-output_dir <- file.path(base_dir, "github") # where the data will go
+output_dir <- file.path(base_dir, "nephovis") # where the data will go
 solutions <- list("tsne30" = ".tsne.30")
 
 # Token level ----
 suffix <- ".ttmx.dist.pac"
 for (lemma in lemmas) {
   models_file <- file.path(output_dir, lemma, paste0(lemma, '.models.tsv'))
-  files_list <- paste0(read_tsv(models_file, lazy = FALSE)$`_model`, suffix)
+  files_list <- paste0(read_tsv(models_file)$`_model`, suffix)
   write(toJSON(solutions), file.path(output_dir, lemma, paste0(lemma, ".solutions.json")))
   getClouds(file.path(input_dir, lemma), file.path(output_dir, lemma), files_list, lemma, solutions)
 }
@@ -232,8 +220,9 @@ for (lemma in lemmas) {
 suffix <- ".wwmx.dist.csv"
 for (lemma in lemmas) {
   models_file <- file.path(output_dir, lemma, paste0(lemma, '.models.tsv'))
-  files_list <- paste0(read_tsv(models_file, lazy = FALSE)$`_model`, suffix)
-  getClouds(file.path(cw_dir, lemma), file.path(output_dir, lemma), files_list, lemma, solutions)
+  files_list <- paste0(read_tsv(models_file)$`_model`, suffix)
+  getClouds(file.path(cw_dir, lemma), file.path(output_dir, lemma), files_list, lemma, solutions,
+            type = 'focdists')
 }
 
 # Distances between models ----
@@ -247,25 +236,20 @@ for (lemma in lemmas) {
   distmtx <- read_tsv(file.path(output_dir, lemma, paste0(lemma, ".models.dist.tsv"))) %>%
     matricizeCloud() %>% as.dist()
   pam_data <- pam(distmtx, k = k)
-  medoid_data <- pam_data$clusinfo %>% as_tibble() %>% mutate(medoids = pam_data$medoids, medoid_i = seq(k))
+  medoid_data <- pam_data$clusinfo %>%
+    as_tibble() %>%
+    mutate(medoids = pam_data$medoids, medoid_i = seq(k))
+  
   write_tsv(medoid_data, file.path(output_dir, lemma, paste0(lemma, ".medoids.tsv")))
+  
   models_file <- file.path(output_dir, lemma, paste0(lemma, ".models.tsv"))
-  read_tsv(models_file, lazy = FALSE) %>%
+  read_tsv(models_file) %>%
     mutate(
       pam_cluster = pam_data$clustering[`_model`], # add pam-cluster number
       medoid = pam_data$medoids[pam_cluster] # add name of medoid
       ) %>%
     write_tsv(models_file)
 }
-
-# HDBSCAN ----
-map(setNames(lemmas, lemmas), function(lemma){
-  models <- read_tsv(file.path(output_dir, paste0(lemma, ".medoids.tsv")))$medoids # only medoids
-  map(setNames(models, models),
-      summarizeHDBSCAN, lemma = lemma,
-      input_dir = file.path(input_dir, lemma),
-      output_dir = file.path(output_dir, lemma))
-}) %>%
-  write_rds(file.path(output_dir, "hdbscan.rds"))
 ```
 
+# References

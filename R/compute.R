@@ -90,6 +90,8 @@ getCoords<-function(fit, modelname, rownames, d = "", source = "tsne"){
 #' @param transformed Whether the matrices have been transformed, just for error log
 #'
 #' @return Output from \code{\link[vegan]{procrustes}} between the two matrices
+#'
+#' @family distances
 #' @export
 procMats <- function(mat1, mat2,
                      mat1_name = "first matrix", mat2_name = "second matrix",
@@ -112,6 +114,8 @@ procMats <- function(mat1, mat2,
 #' @param mat2 Second matrix
 #'
 #' @return Statistic from \code{\link[vegan]{mantel}} between the two matrices.
+#'
+#' @family distances
 #' @export
 mantelMats <- function(mat1, mat2){
   # mantel equivalent of procMats
@@ -132,6 +136,8 @@ mantelMats <- function(mat1, mat2){
 #' @param mat2 Second matrix
 #'
 #' @return Distance between matrix
+#'
+#' @family distances
 #' @export
 eucliMats <- function(mat1, mat2){
   tokenlist <- row.names(mat1)[row.names(mat1) %in% row.names(mat2)]

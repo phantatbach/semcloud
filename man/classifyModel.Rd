@@ -4,7 +4,7 @@
 \alias{classifyModel}
 \title{Classify clouds in a model}
 \usage{
-classifyModel(mdata, mname, ttmx_dir, suffix = ".ttmx.dist.pac")
+classifyModel(mdata, mname, ttmx_dir, suffix = ".ttmx.dist.pac", k = 8)
 }
 \arguments{
 \item{mdata}{Data of a model, as given by \code{\link{summarizeHDBSCAN}}.}
@@ -16,6 +16,9 @@ classifyModel(mdata, mname, ttmx_dir, suffix = ".ttmx.dist.pac")
 \item{suffix}{Suffix of the file names for the token-level distance matrices;
 the function assumes that the name of the file is the name of the medoid
 plus the suffix.}
+
+\item{k}{Number of nearest neighbors for \code{\link{clusterDistance}}
+and \code{\link{clusterSeparation}}.}
 }
 \value{
 A table with one row per cluster in the model, the columns created by

@@ -16,11 +16,11 @@ weightLemma(
 \item{cws}{Dataframe with one row per token per context word, output
 of \code{\link{setupConcordancer}}.}
 
-\item{foc_param_fun}{Function that takes the name of a model and return a
+\item{foc_param_fun}{Function that takes the name of a model and returns a
 character string with first-order filters (to be used as \code{foc_param}
 in \code{\link{getContext}} and thus \code{\link{filterFoc}}).}
 
-\item{weight_param_fun}{Function that takes the name of a model and return a
+\item{weight_param_fun}{Function that takes the name of a model and returns a
 character string with weighting filters (to be used as \code{weight_param}
 in \code{\link{getContext}} and thus \code{\link{filterWeight}}).}
 

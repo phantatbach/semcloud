@@ -30,7 +30,7 @@ with the context words captured by the model.}
 
 \item{clean_word_fun}{Function to clean the \code{word} column.}
 
-\item{to_remove}{Vector of \code{word} values to remove altoghether.}
+\item{to_remove}{Vector of \code{word} values to remove altogether.}
 
 \item{...}{Arguments to be passed to \code{\link{filterFoc}} and \code{\link{filterWeight}}.}
 }

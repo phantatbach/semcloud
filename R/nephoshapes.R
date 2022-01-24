@@ -120,7 +120,7 @@ clusterHDBSCAN <- function(m) {
 #' Compute Semvar values on clusters
 #'
 #' @inheritParams clusterHDBSCAN
-#' @param k Number of tokens to compute \code\link{separationkNN}
+#' @param k Number of tokens to compute \code{\link{separationkNN}}
 #'
 #' @return A tibble with one row per cluster and output from
 #'   \code{\link{separationkNN}} and \code{\link[cluster]{silhouette}}

@@ -9,6 +9,19 @@ template:
   theme: kate
   bslib:
     primary: "#0266a0"
+
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: From SemasioFlow to NephoVis
+        href: articles/processClouds.html
+      - text: Weight contexts
+        href: articles/weightConcordance.html
+      - text: HDBSCAN in token-level clouds
+        href: articles/HDBSCAN.html
+
 reference:
 - title: Open nephosem files
   desc: |

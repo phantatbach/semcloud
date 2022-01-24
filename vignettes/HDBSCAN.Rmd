@@ -1,0 +1,115 @@
+---
+title: "HDBSCAN in token-level clouds"
+author: "Mariana Montesr"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{HDBSCAN in token-level clouds}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "../inst/REFERENCES.bib"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+The workflow this package is designed for uses HDBSCAN [@campello.etal_2013] to cluster the tokens. The main purpose is to systematically and objectively identify groups of similar tokens, while allowing some of them to be excluded as noise. @montes_2021 argues that the groups identified by HDBSCAN tend to coincide with the groups that a human researcher might visually identify in a t-SNE rendering of the same model with perplexity 30. However, the nature of these clusters is very diverse, leading to a technical classification that can be linked both to visual shapes and linguistic properties (see [Chapter 5](https://cloudspotting.marianamontes.me/shapes.html) of @montes_2021).
+The functions in this vignette take output from the `semasioflow` Python package and from the [cloud processing vignette](processClouds.html), prepares the data to be used in the [Level3 ShinyApp](https://github.com/montesmariana/Level3) and shows how to classify clouds according to said typology.
+
+# Register HDBSCAN 
+
+The first step is to decide on which lemmas HDBSCAN will be computed; often you might only be interested in the medoids.
+HDBSCAN information, from clustering to membership probabilities or $\varepsilon$ values, *could* in principle be included for NephoVis, but it would require a lot of adjusting and it's still on the wishlist.
+
+The current workaround is to leave the HDBSCAN visualization to the [Level3 ShinyApp](https://github.com/montesmariana/Level3),
+which requires the output of this step as an RDS file and the type-level distance matrices corresponding to the different models.
+the file has a named list with one item per lemma, and in each lemma a `senses` dataframe with token IDs and other general information of interest and, most importantly, a `medoidCoords` named list with one item per model. Each model object includes:
+
+- `coords`: the coordinates of the tokens, next to other variables in the "variables" dataframe like, in my case, "senses", as well as the tailored list of context words. `summarizeHDBSCAN()` adds the HDBSCAN-derived values (cluster, membership and $\varepsilon$).
+
+- `cws`: distribution of first-order context words across HDBSCAN clusters and their t-SNE coordinates if available. This dataframe has one row per context word per cluster and recall, precision and F-score information for the relationship between the context word and the HDBSCAN cluster.
+
+Note that, in order to use tailored contexts, they need to already be computed and stored in the `'[lemma].variables.tsv'` file as shown in `vignette('weightConcordance')`.
+The main function, `summarizeHDBSCAN()`, requires:
+
+- `lemma`
+
+- `input_dir`: the directory where the distance matrices are stored
+
+- `output_dir`: the directory where the output from `vignette('processClouds')` is stored
+
+- `coords_name`: the infix of the coordinates files
+
+```{r hdbscan}
+# You could run it on all the models or just the medoids
+# models <- read_tsv(file.path(output_dir, lpaste0(lemma, ".models.tsv")))$`_model` # all models
+models <- read_tsv(file.path(output_dir, paste0(lemma, ".medoids.tsv")))$medoids # only medoids
+res <- map(setNames(models, models),
+           summarizeHDBSCAN, lemma = lemma,
+           input_dir = input_dir,
+           output_dir = output_dir,
+           coords_name = '.tsne.30')
+
+# I would normally make one of these files for all my lemmas and store it within the github directory above the lemma subdirectories
+to_write <- list()
+to_write[lemma] <- res
+write_rds(to_write, file.path(output_dir, "hdbscan.rds"))
+```
+
+We can also use `purrr::map()` to create a named list gathering the full data for each lemma)
+
+```{r looping, eval = FALSE}
+lemmas <- c('lemma1', 'lemma2', 'lemma3') #or whatever they are
+input_dir <- file.path(base_dir, "output", "tokens") # where the data is stored
+output_dir <- file.path(base_dir, "nephovis") # where the data will go
+
+# HDBSCAN ----
+map(setNames(lemmas, lemmas), function(lemma){
+  models <- read_tsv(file.path(output_dir, paste0(lemma, ".medoids.tsv")))$medoids # only medoids
+  map(setNames(models, models),
+      summarizeHDBSCAN, lemma = lemma,
+      input_dir = file.path(input_dir, lemma),
+      output_dir = file.path(output_dir, lemma))
+}) %>%
+  write_rds(file.path(output_dir, "hdbscan.rds"))
+```
+
+# Cloud classification
+
+Running `classifyModel()` with the path to the distance matrices and
+the output from the `summarizeHDBSCAN()` returns a dataframe with one row per model per
+cluster, summary information related to the HDBSCAN clustering (from $\varepsilon$ values)
+and mean distances between tokens to separability indices in relation to the
+t-SNE rendering.
+In addition, it uses some of these variables to classify the shapes of the clusters.
+
+With `purrr::imap_dfr()` we can combine the data across multiple lemmas for an overarching
+dataframe. Note that the data will correspond to whatever went through `summarizeHDBSCAN()`:
+if you would like a classification for all your models, you will need to run
+`summarizeHDBSCAN()` on all of them.
+
+```{r cloudclassification}
+models <- readRDS(file.path(output_dir, "hdbscan.rds")) # output of the previous section
+
+# For one model
+lname <- names(models)[[1]]
+mname <- names(models[[lname]]$medoidCoords)[[1]]
+
+classifyModel(models[[lname]]$medoidCoords[[1]],
+             names(models[[lname]]$medoidCoords)[[1]],
+             file.path(input_dir, lname))
+             
+# For all models, all lemmas
+classification <- imap_dfr(models, function(ldata, lname){
+    imap_dfr(models[[lname]]$medoidCoords, classifyModel,
+    ttmx_dir = file.path(input_dir, lname)) %>% 
+    mutate(lemma = lname)
+})
+```
+
+# References

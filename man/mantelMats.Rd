@@ -17,3 +17,9 @@ Statistic from \code{\link[vegan]{mantel}} between the two matrices.
 \description{
 Mantel statistic between two matrices
 }
+\seealso{
+Other distances: 
+\code{\link{eucliMats}()},
+\code{\link{procMats}()}
+}
+\concept{distances}

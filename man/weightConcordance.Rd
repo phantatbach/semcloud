@@ -17,7 +17,7 @@ by \code{\link{setupConcordancer}}.}
 
 \item{...}{Arguments to be passed to \code{\link{weightLemma}} and
 \code{\link{getContext}}, in order to adapt to different ways of coding
-parameter settings.}
+parameter settings. See \code{vignette('weightConcordance')}.}
 }
 \value{
 Enriched \code{variables} dataframe with columns containing weighted

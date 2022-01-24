@@ -217,7 +217,7 @@ filterWeight <- function(
 #' @param cw_selection List or character string of semicolon-separated values
 #'   with the context words captured by the model.
 #' @param clean_word_fun Function to clean the \code{word} column.
-#' @param to_remove Vector of \code{word} values to remove altoghether.
+#' @param to_remove Vector of \code{word} values to remove altogether.
 #' @param ... Arguments to be passed to \code{\link{filterFoc}} and \code{\link{filterWeight}}.
 #'
 #' @return Character string with (weighted) concordance line.
@@ -264,6 +264,7 @@ getContext <- function(
   left <- tid_data %>% dplyr::filter(.data$side == 'L') %>% dplyr::arrange(dplyr::desc(.data$distance))
   right <- tid_data %>% dplyr::filter(.data$side == 'R') %>% dplyr::arrange(.data$distance)
   stringr::str_glue('{paste(left$word, collapse = " ")} <span class="target">{target}</span> {paste(right$word, collapse = " ")}')
+  # stringr::str_glue("{paste(left$word, collapse = ' ')} <span class='target'>{target}</span> {paste(right$word, collapse = ' ')}")
 
 }
 
@@ -271,10 +272,10 @@ getContext <- function(
 #'
 #' @param cws Dataframe with one row per token per context word, output
 #'   of \code{\link{setupConcordancer}}.
-#' @param foc_param_fun Function that takes the name of a model and return a
+#' @param foc_param_fun Function that takes the name of a model and returns a
 #'   character string with first-order filters (to be used as \code{foc_param}
 #'   in \code{\link{getContext}} and thus \code{\link{filterFoc}}).
-#' @param weight_param_fun Function that takes the name of a model and return a
+#' @param weight_param_fun Function that takes the name of a model and returns a
 #'   character string with weighting filters (to be used as \code{weight_param}
 #'   in \code{\link{getContext}} and thus \code{\link{filterWeight}}).
 #' @param sup_weight_fun Function that takes the output of \code{weight_param_fun}
@@ -322,7 +323,7 @@ weightLemma <- function(
 #' @param lemma Name of the lemma, to process model names
 #' @param ... Arguments to be passed to \code{\link{weightLemma}} and
 #'   \code{\link{getContext}}, in order to adapt to different ways of coding
-#'   parameter settings.
+#'   parameter settings. See \code{vignette('weightConcordance')}.
 #'
 #' @return Enriched \code{variables} dataframe with columns containing weighted
 #'   concordance lines.

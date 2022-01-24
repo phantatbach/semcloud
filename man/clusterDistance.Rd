@@ -4,7 +4,7 @@
 \alias{clusterDistance}
 \title{Compute distances per cluster}
 \usage{
-clusterDistance(clustering, dists)
+clusterDistance(clustering, dists, k = 8)
 }
 \arguments{
 \item{clustering}{Named vector with token IDs as names and (HDBSCAN) clusters
@@ -13,6 +13,8 @@ as values. We assume that each cluster has at least 8 items.}
 \item{dists}{Long format table with one row per pair of tokens (that are not
 the same), the distance between them, the cluster that the first token belongs
 to and whether they both belong to the same cluster.}
+
+\item{k}{Number of nearest neighbors to get maximum distance from}
 }
 \value{
 A tibble with one row per cluster and various distance-derived values:

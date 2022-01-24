@@ -29,3 +29,9 @@ Output from \code{\link[vegan]{procrustes}} between the two matrices
 \description{
 Procrustes between two matrices
 }
+\seealso{
+Other distances: 
+\code{\link{eucliMats}()},
+\code{\link{mantelMats}()}
+}
+\concept{distances}
