@@ -19,14 +19,16 @@ knitr::opts_chunk$set(
 ```
 
 The workflow this package is designed for uses HDBSCAN [@campello.etal_2013] to cluster the tokens. The main purpose is to systematically and objectively identify groups of similar tokens, while allowing some of them to be excluded as noise. @montes_2021 argues that the groups identified by HDBSCAN tend to coincide with the groups that a human researcher might visually identify in a t-SNE rendering of the same model with perplexity 30. However, the nature of these clusters is very diverse, leading to a technical classification that can be linked both to visual shapes and linguistic properties (see [Chapter 5](https://cloudspotting.marianamontes.me/shapes.html) of @montes_2021).
-The functions in this vignette take output from the `semasioflow` Python package and from the [cloud processing vignette](processClouds.html), prepares the data to be used in the [Level3 ShinyApp](https://github.com/montesmariana/Level3) and shows how to classify clouds according to said typology.
+The functions in this vignette take output from the
+[`semasioFlow` Python workflow](https://montesmariana.github.io/semasioFlow/tutorials/createClouds.html)
+and from the [cloud processing vignette](processClouds.html), prepares the data to be used in the [Level3 ShinyApp](https://github.com/montesmariana/Level3) and shows how to classify clouds according to said typology.
 
 # Register HDBSCAN 
 
 The first step is to decide on which lemmas HDBSCAN will be computed; often you might only be interested in the medoids.
 HDBSCAN information, from clustering to membership probabilities or $\varepsilon$ values, *could* in principle be included for NephoVis, but it would require a lot of adjusting and it's still on the wishlist.
 
-The current workaround is to leave the HDBSCAN visualization to the [Level3 ShinyApp](https://github.com/montesmariana/Level3),
+The current workaround is to leave the HDBSCAN visualization to the [Level3 ShinyApp](https://github.com/montesmariana/Level3)^[See application [here](https://marianamontes.shinyapps.io/Level3/).],
 which requires the output of this step as an RDS file and the type-level distance matrices corresponding to the different models.
 the file has a named list with one item per lemma, and in each lemma a `senses` dataframe with token IDs and other general information of interest and, most importantly, a `medoidCoords` named list with one item per model. Each model object includes:
 

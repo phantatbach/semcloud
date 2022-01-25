@@ -20,9 +20,8 @@ knitr::opts_chunk$set(
 
 This package is not autonomous: it is designed to support a specific section of a pipeline,
 meaning that it takes as input output from
-the [`semasioFlow`](https://github.com/montesmariana/semasioFlow) Python package
-(which uses the [`nephosem`](https://qlvl.github.io/nehosem/)) Python package
-and prepares the data to be used in [NephoVis](https://github.com/QLVL/NephoVis) and the [Level3 ShinyApp](https://github.com/montesmariana/Level3).
+the [`semasioFlow`](https://montesmariana.github.io/semasioFlow) Python package^[A similar vignette for the Python steps can be found [here](https://montesmariana.github.io/semasioFlow/tutorials/createClouds.html).]
+and prepares the data to be used in [NephoVis](https://qlvl.github.io/NephoVis) and the [Level3 ShinyApp](https://github.com/montesmariana/Level3).
 This vignette will show the procedure to prepare data for NephoVis, whereas `vignette('HDBSCAN')`
 will go through the HDBSCAN clustering for Level3 and the classification of clouds.
 
@@ -41,7 +40,7 @@ library(rjson) # to store json files
 options(readr.show_col_types = FALSE)
 ```
 
-Then we want to set up the most important paths, which may or may not be in the same directory. By default, the `semasioFlow` workflow will store the distance matrices in an `output` directory with a `tokens` subdirectory for token-level matrices and a `cws` directory for type-level matrices. These are going to be the **input** for this processing.
+Then we want to set up the most important paths, which may or may not be in the same directory. By default, the [`semasioFlow` workflow](https://montesmariana.github.io/semasioFlow/tutorials/createClouds.html) will store the distance matrices in an `output` directory with a `tokens` subdirectory for token-level matrices and a `cws` directory for type-level matrices. These are going to be the **input** for this processing.
 On the other hand, `semasioFlow` stores registers (frequency data of the context words,
 parameter settings of the different models and lists of context words per token)
 in a `nephovis` directory, which you can use to feed data to [NephoVis](https://github.com/qlvl/nephovis). This is going to be our **output** directory.
@@ -190,7 +189,7 @@ read_tsv(models_file) %>%
 ## Further steps
 
 The visualization can also take advantage of tailored contexts for the different models;
-the code to obtain these columns, based on the output of `semasioFlow.contextwords.listContextwords()` and the data in `'[lemma].variables.tsv'`, is described in `vignette('weightConcordance')`.
+the code to obtain these columns, based on the output of [`semasioFlow.contextwords.listContextwords()`](https://montesmariana.github.io/semasioFlow/semasioFlow.contextwords.html#semasioFlow.contextwords.listContextwords) and the data in `'[lemma].variables.tsv'`, is described in `vignette('weightConcordance')`.
 
 In addition, HDBSCAN clustering and classification of the clusters is covered in `vignette('HDBSCAN')`.
 

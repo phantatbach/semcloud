@@ -21,8 +21,8 @@ knitr::opts_chunk$set(
 
 The goal of semcloud is to process the output of the Python Workflow of
 the Nephological Semantics project
-(combining [nephosem](https://github.com/QLVL/nephosem/)
-and [semasioFlow](https://github.com/montesmariana/semasioFlow))
+(combining [nephosem](https://qlvl.github.io/nephosem)
+and [semasioFlow](https://montesmariana.github.io/semasioFlow))
 and prepare it to be
 used with [NephoVis](https://qlvl.github.io/NephoVis).
 
