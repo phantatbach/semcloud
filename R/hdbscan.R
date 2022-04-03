@@ -149,7 +149,7 @@ summarizeHDBSCAN <- function(lemma, modelname, input_dir, output_dir, minPts = 8
   dstmtx <- tokensFromPac(file.path(input_dir, ttmx)) %>%
     transformMats(TRUE)
   variables_original <- readr::read_tsv(variables_file, show_col_types = FALSE,
-                                        quote = F)
+                                        quote = "")
   variables <- variables_original %>%
     dplyr::select(.data$`_id`, # keep id column
            cws = stringr::str_replace(modelname, "(.+).LENGTH.*", "_cws.\\1"), # context words column
