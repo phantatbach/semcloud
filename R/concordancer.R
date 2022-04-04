@@ -344,8 +344,12 @@ weightConcordance <- function(variables, cws, lemma, ...) {
     colnames()
 
   # add raw context
+  rawModel <- function(tid) {R.utils::doCall(
+    getContext,
+    tid = tid, cws = cws, args = extra_args, .ignoreUnusedArgs = FALSE
+  )}
   variables <- variables %>%
-    dplyr::mutate(`_ctxt.raw` = purrr::map_chr(.data$`_id`, getContext, cws = cws))
+    dplyr::mutate(`_ctxt.raw` = purrr::map_chr(.data$`_id`, rawModel))
 
 
   weightModel <- R.utils::doCall(
