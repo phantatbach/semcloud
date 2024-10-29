@@ -169,7 +169,7 @@ distmtx <- read_tsv(file.path(output_dir, paste0(lemma, ".models.dist.tsv"))) %>
 pam_data <- pam(distmtx, k = k)
 medoid_data <- pam_data$clusinfo %>%
   as_tibble() %>%
-  mutate(medoids = pam_data$medoids, medoid_i = seq(k))
+  mutate(medoid = pam_data$medoids, medoid_i = seq(k)) # medoid in singular or NephoVis would not be able to read it
 
 write_tsv(medoid_data, file.path(output_dir, paste0(lemma, ".medoids.tsv")))
 ```
