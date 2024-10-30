@@ -59,8 +59,9 @@ res <- map(setNames(models, models),
 
 # I would normally make one of these files for all my lemmas and store it within the github directory above the lemma subdirectories
 to_write <- list()
-to_write[lemma] <- res
-write_rds(to_write, file.path(output_dir, "hdbscan.rds"))
+# to_write[lemma] <- res # This does not work as you need to assign models, not lemma
+to_write[models] <- res
+write_rds(to_write, file.path(output_dir, paste0(lemma, ".rds")))
 ```
 
 We can also use `purrr::map()` to create a named list gathering the full data for each lemma)
